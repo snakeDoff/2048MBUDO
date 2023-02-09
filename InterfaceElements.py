@@ -21,7 +21,7 @@ def textScale(elem):
     elif len(elem) in range(2, 5):
         return 0.9
     elif len(elem) in range(8, 10):
-        return 0.72
+        return 0.7
     else:
         return 1
 

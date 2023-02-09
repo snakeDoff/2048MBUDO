@@ -159,6 +159,7 @@ class GameInterface(Game):
 
     def startGame(self, a):
         self.sizep = self.psize = a
+        pygame.display.set_caption('2048 by MBUDO : game')
         self.usedcuts = 0
         self.cutrez = 1000
         self.useddob = 0
