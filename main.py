@@ -166,6 +166,18 @@ class GameInterface(Game):
         self.usedcuts = 0
         self.spawn()
         self.makebackup()
+    def makeSave(self):
+        save = {
+            "pole": self.pole,
+            "score": self.score,
+            "usedcuts": self.usedcuts,
+            "useddob": self.useddob,
+            "scoreBack": self.scoreBack,
+            "poleBack": self.backup
+        }
+        with open(f"saves/{self.psize}.json", 'w') as F:
+            json.dump(save, F, indent=4)
+            F.close()
 
     def startGame(self, a):
         self.sizep = self.psize = a
@@ -217,6 +229,7 @@ class GameInterface(Game):
                         self.cut()
                     elif event.key == pygame.K_b:
                         self.back()
+            self.makeSave()
             if self.moved:
                 self.spawn()
             self.display.fill(self.colors['background'])
