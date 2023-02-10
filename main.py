@@ -48,7 +48,6 @@ class GameInterface(Game):
         }
         pygame.init()
         self.display = pygame.display.set_mode((self.width, self.width))
-        pygame.display.set_caption('2048 by MBUDO : game')
         pygame.display.set_icon(self.icon)
         self.clock = pygame.time.Clock()
 
@@ -157,10 +156,13 @@ class GameInterface(Game):
             command = f'double-{i}-{j}'
             self.move(command)
 
+    def BTchoose(self):
+        self.BTc = 1
     def startGame(self, a):
         self.sizep = self.psize = a
         pygame.display.set_caption('2048 by MBUDO : game')
         self.usedcuts = 0
+        self.BTc = 0
         self.cutrez = 1000
         self.useddob = 0
         self.score = 10 ** 6
@@ -172,6 +174,9 @@ class GameInterface(Game):
                          image='images/cut.png', imgsize=(20, 20), imgpos=(5,5))
         dbut = IE.Button(80, 30, self.colors['lines'], self.colors['.'],
                          image='images/double.png', imgsize=(20, 20), imgpos=(5,5))
+        backbut = IE.Button(width=30, height=30,
+                            activecolor=self.colors['lines'], inactivecolor=self.colors['.'],
+                            image='images/back.png', imgsize=(20, 20), imgpos=(5, 5))
         run = True
         while run:
             self.possiblecuts = self.score // self.cutrez
@@ -211,6 +216,10 @@ class GameInterface(Game):
             dbut.draw(self.startX + 90, 10, dp=self.display, action=self.double,
                       text=f':{str(self.possibledob - self.useddob)}',
                       textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
+            backbut.draw(x=(self.width-self.startX-30), y=10, dp=self.display, action=self.BTchoose)
+            if self.BTc:
+                run = False
+                self.startChose()
             self.drawpole()
             self.clock.tick(self.fps)
             pygame.display.update()
@@ -228,7 +237,7 @@ class GameInterface(Game):
             IE.print_text('2048', self.colors['black'], 200, 5, size=75, display=self.display)
             IE.print_text('by MBUDO', self.colors['black'], 100, 85, size=75, display=self.display)
             chmodebut.draw(100, 200, text='Play', textcolor=self.colors['black'], textsize=50,
-                           textpos=(50,5), action=self.endlop)
+                           textpos=(50, 5), action=self.endlop)
             if self.end == 1:
                 loop = False
                 self.startChose()
@@ -238,8 +247,11 @@ class GameInterface(Game):
     def endlop(self):
         self.end = 1
 
+    def BTmenu(self):
+        self.BTm = 1
     def startChose(self):
         loop = True
+        self.BTm = 0
         self.end = 0
         pygame.display.set_caption('2048 by MBUDO : Choosing mode')
         larr = IE.Button(width=100, height=50, image='images/leftarrow.png',
@@ -250,6 +262,8 @@ class GameInterface(Game):
                          inactivecolor=self.colors['.'])
         mbut = IE.Button(width=100, height=50, activecolor=self.colors['lines'],
                          inactivecolor=self.colors['.'])
+        backbut = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'],
+                            image='images/back.png', imgsize=(20, 20), imgpos=(5, 5))
         while loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -260,10 +274,14 @@ class GameInterface(Game):
             rarr.draw(x=400, y=450, dp=self.display, action=self.rarrf)
             mbut.draw(x=250, y=450, dp=self.display,
                       text='Start game', textcolor=self.colors['black'], textsize=15, textpos=(5, 15), action=self.endlop)
+            backbut.draw(x=(self.width - 130), y=50, dp=self.display, action=self.BTmenu)
             if self.end == 1:
                 loop = False
                 self.setScale()
                 self.startGame(self.gamemodes[self.cur])
+            if self.BTm:
+                loop = False
+                self.startMenu()
             pygame.display.update()
             self.clock.tick(self.fps)
 
