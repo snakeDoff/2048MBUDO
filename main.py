@@ -1,5 +1,5 @@
-from GameLogic import Game, backuping
-import InterfaceElements as IE
+from scripts.GameLogic import Game, backuping
+from scripts import InterfaceElements as IE
 import pygame
 
 
