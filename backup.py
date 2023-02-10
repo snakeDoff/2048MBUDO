@@ -207,7 +207,7 @@ class GameInterface(Game):
         self.win = None
         self.lose = None
         self.sizep = 0
-        self.icon = pygame.image.load('logo1.png')
+        self.icon = pygame.image.load('images/logo1.png')
         self.startX = 50
         self.startY = 50
         self.plineW = 10

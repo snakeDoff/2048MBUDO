@@ -12,7 +12,7 @@ class GameInterface(Game):
         self.win = None
         self.lose = None
         self.sizep = 0
-        self.icon = pygame.image.load('logo.jpg')
+        self.icon = pygame.image.load('images/logo.jpg')
         self.startX = 50
         self.startY = 50
         self.plineW = 10
@@ -166,9 +166,12 @@ class GameInterface(Game):
         self.score = 10 ** 6
         self.spawnpole(self.psize)
         self.spawn()
-        rbut = IE.Button(30, 30, self.colors['lines'], self.colors['.'], image='rbut1.png', imgsize=(20, 20), imgpos=(5, 5))
-        cbut = IE.Button(80, 30, self.colors['lines'], self.colors['.'], image='cut.png', imgsize=(20, 20), imgpos=(5,5))
-        dbut = IE.Button(80, 30, self.colors['lines'], self.colors['.'], image='double.png', imgsize=(20, 20), imgpos=(5,5))
+        rbut = IE.Button(30, 30, self.colors['lines'], self.colors['.'],
+                         image='images/rbut1.png', imgsize=(20, 20), imgpos=(5, 5))
+        cbut = IE.Button(80, 30, self.colors['lines'], self.colors['.'],
+                         image='images/cut.png', imgsize=(20, 20), imgpos=(5,5))
+        dbut = IE.Button(80, 30, self.colors['lines'], self.colors['.'],
+                         image='images/double.png', imgsize=(20, 20), imgpos=(5,5))
         run = True
         while run:
             self.possiblecuts = self.score // self.cutrez
@@ -239,10 +242,10 @@ class GameInterface(Game):
         loop = True
         self.end = 0
         pygame.display.set_caption('2048 by MBUDO : Choosing mode')
-        larr = IE.Button(width=100, height=50, image='leftarrow.png',
+        larr = IE.Button(width=100, height=50, image='images/leftarrow.png',
                          imgsize=(95, 45), imgpos=(5, 5), activecolor=self.colors['lines'],
                          inactivecolor=self.colors['.'])
-        rarr = IE.Button(width=100, height=50, image='rightarrow.png',
+        rarr = IE.Button(width=100, height=50, image='images/rightarrow.png',
                          imgsize=(100, 50), imgpos=(0, 0), activecolor=self.colors['lines'],
                          inactivecolor=self.colors['.'])
         mbut = IE.Button(width=100, height=50, activecolor=self.colors['lines'],
@@ -252,7 +255,7 @@ class GameInterface(Game):
                 if event.type == pygame.QUIT:
                     pygame.quit()
             self.display.fill(self.colors['background'])
-            IE.draw_image(f'{self.gamemodes[self.cur]}.png', 400, 400, 100, 50, self.display)
+            IE.draw_image(f'images/{self.gamemodes[self.cur]}.png', 400, 400, 100, 50, self.display)
             larr.draw(x=100, y=450, dp=self.display, action=self.larrf)
             rarr.draw(x=400, y=450, dp=self.display, action=self.rarrf)
             mbut.draw(x=250, y=450, dp=self.display,
