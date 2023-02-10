@@ -1,1 +1,0 @@
-((self.fontsize / 2) * len(self.pole[i][j])) / 2

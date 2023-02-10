@@ -1,6 +1,7 @@
 from scripts.GameLogic import Game, backuping
 from scripts import InterfaceElements as IE
 import pygame
+import json
 
 
 class GameInterface(Game):
@@ -155,9 +156,17 @@ class GameInterface(Game):
             self.makebackup()
             command = f'double-{i}-{j}'
             self.move(command)
-
     def BTchoose(self):
         self.BTc = 1
+
+    def Brestart(self):
+        self.spawnpole(self.psize)
+        self.score = 0
+        self.useddob = 0
+        self.usedcuts = 0
+        self.spawn()
+        self.makebackup()
+
     def startGame(self, a):
         self.sizep = self.psize = a
         pygame.display.set_caption('2048 by MBUDO : game')
@@ -177,6 +186,8 @@ class GameInterface(Game):
         backbut = IE.Button(width=30, height=30,
                             activecolor=self.colors['lines'], inactivecolor=self.colors['.'],
                             image='images/back.png', imgsize=(20, 20), imgpos=(5, 5))
+        resbut = IE.Button(width=69, height=30,
+                           activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
         run = True
         while run:
             self.possiblecuts = self.score // self.cutrez
@@ -217,6 +228,8 @@ class GameInterface(Game):
                       text=f':{str(self.possibledob - self.useddob)}',
                       textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
             backbut.draw(x=(self.width-self.startX-30), y=10, dp=self.display, action=self.BTchoose)
+            resbut.draw(x=(self.startX + 220), y=10, dp=self.display, action=self.Brestart,
+                        text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
             if self.BTc:
                 run = False
                 self.startChose()
