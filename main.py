@@ -166,6 +166,7 @@ class GameInterface(Game):
         self.usedcuts = 0
         self.spawn()
         self.makebackup()
+
     def makeSave(self):
         save = {
             "pole": self.pole,
@@ -179,15 +180,29 @@ class GameInterface(Game):
             json.dump(save, F, indent=4)
             F.close()
 
+    def loadSave(self):
+        try:
+            with open(f'saves/{self.psize}.json', 'rb') as F:
+                save = json.load(F)
+                self.pole = save["pole"]
+                self.score = save["score"]
+                self.usedcuts = save["usedcuts"]
+                self.useddob = save["useddob"]
+                self.scoreBack = save["scoreBack"]
+                self.backup = save["poleBack"]
+        except FileNotFoundError:
+            self.spawnpole(self.psize)
+            self.score = 0
+            self.useddob = 0
+            self.usedcuts = 0
+            self.makebackup()
+
+
     def startGame(self, a):
         self.sizep = self.psize = a
         pygame.display.set_caption('2048 by MBUDO : game')
-        self.usedcuts = 0
         self.BTc = 0
-        self.cutrez = 1000
-        self.useddob = 0
-        self.score = 10 ** 6
-        self.spawnpole(self.psize)
+        self.loadSave()
         self.spawn()
         rbut = IE.Button(30, 30, self.colors['lines'], self.colors['.'],
                          image='images/rbut1.png', imgsize=(20, 20), imgpos=(5, 5))
