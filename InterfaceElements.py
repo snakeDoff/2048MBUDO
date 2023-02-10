@@ -1,7 +1,7 @@
 import pygame
 
 
-def print_text(message, color, x, y, size=50, display=pygame.display.set_mode(), font='Kefa.ttf'):
+def print_text(message, color, x, y, size=50, display=pygame.display.set_mode(), font='fonts/Kefa.ttf'):
     font_size = pygame.font.Font(font, size)
     text = font_size.render(message, True, color)
     display.blit(text, (x, y))
