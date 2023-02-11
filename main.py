@@ -7,6 +7,7 @@ import json
 class GameInterface(Game):
     def __init__(self):
         super().__init__()
+        self.BTc = None
         self.width = 600
         self.height = 600
         self.fps = 30
@@ -81,7 +82,7 @@ class GameInterface(Game):
                     IE.print_text(self.pole[i][j], self.colors['bright'], display=self.display,
                                   x=self.startX + (self.plineW / 2 + self.psizeQ * (j + 0.5) -
                                                    ((self.fontsize / 2) * len(self.pole[i][j])) // 2) * self.scale
-                                  if (self.psizeQ / 2) -((self.fontsize / 2) * len(self.pole[i][j])) // 2 > 0 else
+                                  if (self.psizeQ / 2) - ((self.fontsize / 2) * len(self.pole[i][j])) // 2 > 0 else
                                   (self.startX + (self.plineW / 2 + self.psizeQ * j)),
                                   y=self.startY + (
                                           self.psizeQ * i + self.plineW / 2 + self.fontsize) * self.scale,
@@ -156,6 +157,7 @@ class GameInterface(Game):
             self.makebackup()
             command = f'double-{i}-{j}'
             self.move(command)
+
     def BTchoose(self):
         self.BTc = 1
 
