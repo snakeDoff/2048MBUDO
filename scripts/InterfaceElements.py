@@ -39,7 +39,8 @@ class Button:
             self.pic = pygame.image.load(self.image)
             self.pic = pygame.transform.scale(self.pic, tuple(self.imgsize))
 
-    def draw(self, x, y, dp=pygame.display.set_mode(), action=None, text=None, textcolor=None, textpos=None, textsize=None):
+    def draw(self, x, y, dp=pygame.display.set_mode(), action=None, text=None, textcolor=None, textpos=None, textsize=None,
+             textfont='fonts/Kefa.ttf'):
         mpos = pygame.mouse.get_pos()
         mclick = pygame.mouse.get_pressed()
         if (x < mpos[0] < x + self.width) and (y < mpos[1] < y + self.height):
@@ -54,8 +55,8 @@ class Button:
                 pygame.draw.rect(dp, self.incative, (x, y, self.width, self.height))
         if self.image is not None and self.imgpos is not None and len(self.imgpos) != 0:
             dp.blit(self.pic, (self.imgpos[0] + x, self.imgpos[1] + y))
-        if text is not None and textpos is not None:
-            print_text(str(text), textcolor, textpos[0] + x, textpos[1] + y, textsize, display=dp)
+        if text is not None and textpos is not None and textcolor is not None and textsize is not None:
+            print_text(str(text), textcolor, textpos[0] + x, textpos[1] + y, textsize, display=dp, font=textfont)
 
 
 

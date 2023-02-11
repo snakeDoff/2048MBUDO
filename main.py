@@ -30,6 +30,7 @@ class GameInterface(Game):
         self.scale = 1
         self.gamemodes = [3, 4, 8]
         self.cur = 1
+        self.fullscrined = 0
         self.colors = {
             'background': (248, 248, 232),
             'lines': (183, 173, 161),
@@ -266,12 +267,19 @@ class GameInterface(Game):
             self.drawpole()
             self.clock.tick(self.fps)
             pygame.display.update()
+    def close(self):
+        pygame.quit()
+        quit(0)
 
+    def gtsettings(self):
+        self.end = 2
     def startMenu(self):
         loop = True
         self.end = 0
         pygame.display.set_caption('2048 by MBUDO : Menu')
         chmodebut = IE.Button(self.mbutsize[0], self.mbutsize[1], self.colors['lines'], self.colors['.'])
+        quitbut = IE.Button(self.mbutsize[0], self.mbutsize[1], self.colors['lines'], self.colors['.'])
+        settingsbut = IE.Button(self.mbutsize[0], self.mbutsize[1], self.colors['lines'], self.colors['.'])
         while loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -280,10 +288,18 @@ class GameInterface(Game):
             IE.print_text('2048', self.colors['black'], 200, 5, size=75, display=self.display)
             IE.print_text('by MBUDO', self.colors['black'], 100, 85, size=75, display=self.display)
             chmodebut.draw(100, 200, text='Play', textcolor=self.colors['black'], textsize=50,
-                           textpos=(50, 5), action=self.endlop)
+                           textpos=(75, 5), action=self.endlop)
+            quitbut.draw(100, 460, text='Quit', textcolor=self.colors['black'], textsize=50,
+                         textpos=(75, 5), action=self.close)
+            settingsbut.draw(100, 330, text='Settings', textcolor=self.colors['black'], textsize=50,
+                             textpos=(75, 5), action=self.gtsettings)
             if self.end == 1:
                 loop = False
                 self.startChose()
+            if self.end == 2:
+                loop = False
+                self.startSettings()
+
             pygame.display.update()
             self.clock.tick(self.fps)
 
@@ -347,6 +363,45 @@ class GameInterface(Game):
             self.cur = 0
         else:
             self.cur += 1
+
+    def isfullscrined(self):
+        if self.fullscrined:
+            return '✓'
+        else:
+            return '✖︎'
+
+    def setfullscreen(self):
+        if not self.fullscrined:
+            self.display = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
+            self.fullscrined = 1
+        else:
+            self.display = pygame.display.set_mode((self.width, self.height))
+            self.fullscrined = 0
+        pygame.time.delay(000)
+
+    def startSettings(self):
+        loop = True
+        self.BTm = 0
+        pygame.display.set_caption('2048 by MBUDO : Settings')
+        backbut = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'],
+                            image='images/back.png', imgsize=(20, 20), imgpos=(5, 5))
+        fscreenbut = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        while loop:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+            self.display.fill(self.colors['background'])
+            backbut.draw(x=(self.width - 130), y=50, dp=self.display, action=self.BTmenu)
+            fscreenbut.draw(x=(self.width - 250), y=100, dp=self.display, text=str(self.isfullscrined()),
+                            textcolor=self.colors['black'], textpos=(5, 5), textsize=25, textfont='fonts/symbols.ttc',
+                            action=self.setfullscreen)
+            IE.print_text('Full-screen :', x=100, y=100, display=self.display, color=self.colors['black'],
+                          size=25)
+            if self.BTm:
+                loop = False
+                self.startMenu()
+            pygame.display.update()
+            self.clock.tick(self.fps)
 
 # a = Game()
 # a.start()
