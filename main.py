@@ -368,7 +368,7 @@ class GameInterface(Game):
         if self.fullscrined:
             return '✓'
         else:
-            return '✖︎'
+            return '✖'
 
     def setfullscreen(self):
         if not self.fullscrined:
@@ -377,7 +377,7 @@ class GameInterface(Game):
         else:
             self.display = pygame.display.set_mode((self.width, self.height))
             self.fullscrined = 0
-        pygame.time.delay(000)
+        pygame.time.delay(4000)
 
     def startSettings(self):
         loop = True
