@@ -18,6 +18,7 @@ class GameInterface(Game):
         self.startX = 50
         self.startY = 50
         self.plineW = 10
+        self.conti = 0
         self.psizeQ = 125
         self.fontsize = 36
         self.possiblecuts = 0
@@ -167,6 +168,7 @@ class GameInterface(Game):
         self.score = 0
         self.useddob = 0
         self.usedcuts = 0
+        self.conti = 0
         self.spawn()
         self.makebackup()
 
@@ -177,7 +179,8 @@ class GameInterface(Game):
             "usedcuts": self.usedcuts,
             "useddob": self.useddob,
             "scoreBack": self.scoreBack,
-            "poleBack": self.backup
+            "poleBack": self.backup,
+            "continue": self.conti
         }
         with open(f"saves/{self.psize}.json", 'w') as F:
             json.dump(save, F, indent=4)
@@ -193,14 +196,46 @@ class GameInterface(Game):
                 self.useddob = save["useddob"]
                 self.scoreBack = save["scoreBack"]
                 self.backup = save["poleBack"]
+                self.conti = save["continue"]
         except FileNotFoundError:
             self.spawnpole(self.psize)
             self.score = 0
+            self.conti = 0
             self.useddob = 0
             self.usedcuts = 0
             self.makebackup()
+    def contGame(self):
+        self.conti = 1
 
-
+    def drawwin(self):
+        backbut1 = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        restart = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        continu = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        surface1 = self.display.convert_alpha()
+        surface1.fill([255, 255, 255, 0])
+        pygame.draw.rect(surface1, (230, 198, 89, 200), (0, 0, self.width, self.height))
+        self.display.blit(surface1, (0, 0))
+        IE.print_text("You win!", x=self.width / 2 - 150, y=self.height / 2 - 100,
+                      display=self.display, color=self.colors['black'], size=70)
+        backbut1.draw((self.width / 2 - 150), self.height / 2, self.display, action=self.BTchoose, text='back to menu',
+                      textsize=40, textpos=(5, 5), textcolor=self.colors['black'])
+        restart.draw((self.width / 2 - 150), self.height / 2 + 60, self.display, action=self.Brestart, text='restart',
+                      textsize=40, textpos=(65, 5), textcolor=self.colors['black'])
+        continu.draw((self.width / 2 - 150), self.height / 2 + 120, self.display, action=self.contGame, text='continue',
+                     textsize=40, textpos=(55, 5), textcolor=self.colors['black'])
+    def drawlose(self):
+        backbut1 = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        restart = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        surface1 = self.display.convert_alpha()
+        surface1.fill([255, 255, 255, 0])
+        pygame.draw.rect(surface1, (228, 130, 71,  200), (0, 0, self.width, self.height))
+        self.display.blit(surface1, (0, 0))
+        IE.print_text("You lose.", x=self.width / 2 - 150, y=self.height / 2 - 100,
+                      display=self.display, color=self.colors['black'], size=70)
+        backbut1.draw((self.width / 2 - 150), self.height / 2, self.display, action=self.BTchoose, text='back to menu',
+                      textsize=40, textpos=(5, 5), textcolor=self.colors['black'])
+        restart.draw((self.width / 2 - 150), self.height / 2 + 60, self.display, action=self.Brestart, text='restart',
+                     textsize=40, textpos=(65, 5), textcolor=self.colors['black'])
     def startGame(self, a):
         self.sizep = self.psize = a
         pygame.display.set_caption('2048 by MBUDO : game')
@@ -218,6 +253,7 @@ class GameInterface(Game):
                             image='images/back.png', imgsize=(20, 20), imgpos=(5, 5))
         resbut = IE.Button(width=69, height=30,
                            activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+
         run = True
         while run:
             self.possiblecuts = self.score // self.cutrez
@@ -226,7 +262,7 @@ class GameInterface(Game):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                elif event.type == pygame.KEYDOWN:
+                elif event.type == pygame.KEYDOWN and (not self.checkwin() or self.conti) and not self.checklose():
                     if event.key == pygame.K_w:
                         command = 'up'
                         self.makebackup()
@@ -251,28 +287,56 @@ class GameInterface(Game):
             if self.moved:
                 self.spawn()
             self.display.fill(self.colors['background'])
-            rbut.draw(self.startX + 90 * 2, 10, dp=self.display, action=self.back)
-            cbut.draw(self.startX, 10, dp=self.display, action=self.cut,
-                      text=f':{str(self.possiblecuts - self.usedcuts)}',
-                      textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
-            dbut.draw(self.startX + 90, 10, dp=self.display, action=self.double,
-                      text=f':{str(self.possibledob - self.useddob)}',
-                      textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
-            backbut.draw(x=(self.width-self.startX-30), y=10, dp=self.display, action=self.BTchoose)
-            resbut.draw(x=(self.startX + 220), y=10, dp=self.display, action=self.Brestart,
-                        text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
+            self.drawpole()
+            if self.checkwin() and not self.conti:
+                rbut.draw(self.startX + 90 * 2, 10, dp=self.display)
+                cbut.draw(self.startX, 10, dp=self.display,
+                          text=f':{str(self.possiblecuts - self.usedcuts)}',
+                          textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
+                dbut.draw(self.startX + 90, 10, dp=self.display,
+                          text=f':{str(self.possibledob - self.useddob)}',
+                          textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
+                backbut.draw(x=(self.width - self.startX - 30), y=10, dp=self.display)
+                resbut.draw(x=(self.startX + 220), y=10, dp=self.display,
+                            text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
+                self.drawwin()
+            elif self.checklose():
+                rbut.draw(self.startX + 90 * 2, 10, dp=self.display)
+                cbut.draw(self.startX, 10, dp=self.display,
+                          text=f':{str(self.possiblecuts - self.usedcuts)}',
+                          textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
+                dbut.draw(self.startX + 90, 10, dp=self.display,
+                          text=f':{str(self.possibledob - self.useddob)}',
+                          textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
+                backbut.draw(x=(self.width - self.startX - 30), y=10, dp=self.display)
+                resbut.draw(x=(self.startX + 220), y=10, dp=self.display,
+                            text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
+                self.drawlose()
+            else:
+                rbut.draw(self.startX + 90 * 2, 10, dp=self.display, action=self.back)
+                cbut.draw(self.startX, 10, dp=self.display, action=self.cut,
+                          text=f':{str(self.possiblecuts - self.usedcuts)}',
+                          textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
+                dbut.draw(self.startX + 90, 10, dp=self.display, action=self.double,
+                          text=f':{str(self.possibledob - self.useddob)}',
+                          textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
+                backbut.draw(x=(self.width - self.startX - 30), y=10, dp=self.display, action=self.BTchoose)
+                resbut.draw(x=(self.startX + 220), y=10, dp=self.display, action=self.Brestart,
+                            text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
+
             if self.BTc:
                 run = False
                 self.startChose()
-            self.drawpole()
             self.clock.tick(self.fps)
             pygame.display.update()
+
     def close(self):
         pygame.quit()
         quit(0)
 
     def gtsettings(self):
         self.end = 2
+
     def startMenu(self):
         loop = True
         self.end = 0
@@ -308,6 +372,7 @@ class GameInterface(Game):
 
     def BTmenu(self):
         self.BTm = 1
+
     def startChose(self):
         loop = True
         self.BTm = 0
@@ -377,7 +442,7 @@ class GameInterface(Game):
         else:
             self.display = pygame.display.set_mode((self.width, self.height))
             self.fullscrined = 0
-        pygame.time.delay(4000)
+        pygame.time.wait(5000)
 
     def startSettings(self):
         loop = True
