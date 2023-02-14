@@ -50,6 +50,16 @@ class GameInterface(Game):
             'black': (61, 58, 51),
             'bright': (250, 250, 250)
         }
+        self.resolutions = {
+            "1:1": ['600x600', '700x700', '800x800', '900x900', '1000x1000', '1200x1200', '1600x1600'],
+            "4:3": ['800x600', '1024x768', '1400x1050'],
+            "16:9": ['1280x720', '1600x900', '1920x1080', '2560x1440', '3840x2160'],
+            "16:10": ['1440x900', '1680x1050', '2560x1600', '3840x2400']
+        }
+        self.dss = "1:1"
+        self.curds = 0
+        self.curres = 0
+        self.resline = self.resolutions[self.dss]
         pygame.init()
         self.display = pygame.display.set_mode((self.width, self.width))
         pygame.display.set_icon(self.icon)
@@ -206,7 +216,6 @@ class GameInterface(Game):
             self.makebackup()
     def contGame(self):
         self.conti = 1
-
     def drawwin(self):
         backbut1 = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
         restart = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
@@ -437,12 +446,9 @@ class GameInterface(Game):
 
     def setfullscreen(self):
         if not self.fullscrined:
-            self.display = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
             self.fullscrined = 1
         else:
-            self.display = pygame.display.set_mode((self.width, self.height))
             self.fullscrined = 0
-        pygame.time.wait(5000)
 
     def startSettings(self):
         loop = True
@@ -451,22 +457,87 @@ class GameInterface(Game):
         backbut = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'],
                             image='images/back.png', imgsize=(20, 20), imgpos=(5, 5))
         fscreenbut = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        confsetbut = IE.Button(width=110, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        nextres = IE.Button(width=60, height=40, image="images/rightarrow.png", imgpos=(0, 0), imgsize=(60, 40))
+        prevres = IE.Button(width=60, height=40, image="images/leftarrow.png", imgpos=(0, 0), imgsize=(60, 40))
+        nextss = IE.Button(width=60, height=40, image="images/rightarrow.png", imgpos=(0, 0), imgsize=(60, 40))
+        prevss = IE.Button(width=60, height=40, image="images/leftarrow.png", imgpos=(0, 0), imgsize=(60, 40))
         while loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+            resline = self.resolutions[list(self.resolutions.keys())[self.curds]]
             self.display.fill(self.colors['background'])
             backbut.draw(x=(self.width - 130), y=50, dp=self.display, action=self.BTmenu)
             fscreenbut.draw(x=(self.width - 250), y=100, dp=self.display, text=str(self.isfullscrined()),
-                            textcolor=self.colors['black'], textpos=(5, 5), textsize=25, textfont='fonts/symbols.ttc',
+                            textcolor=self.colors['black'], textpos=(4, 2), textsize=25, textfont='fonts/symbols.ttc',
                             action=self.setfullscreen)
+            confsetbut.draw(x=self.width - 240, y=self.height - 100, dp=self.display,
+                            text='confirm', textcolor=self.colors['black'], textsize=25, textpos=(2, 2),
+                            action=self.confirmB)
+            nextres.draw(x=self.width - 100, y=200, dp=self.display, action=self.rarres)
+            prevres.draw(x=self.width - 300, y=200, dp=self.display, action=self.larrres)
+            nextss.draw(x=self.width - 100, y=150, dp=self.display, action=self.rarss)
+            prevss.draw(x=self.width - 250, y=150, dp=self.display, action=self.larss)
+            IE.print_text(list(self.resolutions.keys())[self.curds], x=self.width - 175, y=150,
+                          color=self.colors['black'], size=25)
+            IE.print_text(resline[self.curres],
+                          x=(self.width - 220 if len(resline[self.curres]) < 8 else self.width - 240), y=200,
+                          color=self.colors['black'], size=25)
             IE.print_text('Full-screen :', x=100, y=100, display=self.display, color=self.colors['black'],
                           size=25)
+            IE.print_text('Aspect ratio :', x=100, y=150, display=self.display, color=self.colors['black'],
+                          size=25)
+            IE.print_text('Resolution :', x=100, y=200, display=self.display, color=self.colors['black'],
+                          size=25)
+
             if self.BTm:
                 loop = False
                 self.startMenu()
             pygame.display.update()
             self.clock.tick(self.fps)
+
+    def larrres(self):
+        if self.curres == 0:
+            self.curres = len(self.resolutions[list(self.resolutions.keys())[self.curds]]) - 1
+        else:
+            self.curres -= 1
+
+    def rarres(self):
+        if self.curres == len(self.resolutions[list(self.resolutions.keys())[self.curds]]) - 1:
+            self.curres = 0
+        else:
+            self.curres += 1
+
+    def larss(self):
+        if self.curds == 0:
+            self.curds = len(self.resolutions.keys()) - 1
+        else:
+            self.curds -= 1
+        self.curres = 0
+
+    def rarss(self):
+        if self.curds == len(self.resolutions.keys()) - 1:
+            self.curds = 0
+        else:
+            self.curds += 1
+        self.curres = 0
+
+    def confirmB(self):
+        if not self.fullscrined:
+            setres = self.resolutions[list(self.resolutions.keys())[self.curds]][self.curres].split('x')
+            self.width = int(setres[0])
+            self.height = int(setres[1])
+            self.display = pygame.display.set_mode((self.width, self.height))
+        else:
+            setres = self.resolutions[list(self.resolutions.keys())[self.curds]][self.curres].split('x')
+            self.width = int(setres[0])
+            self.height = int(setres[1])
+            self.display = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
+        pygame.time.delay(500)
+
+
+
 
 # a = Game()
 # a.start()

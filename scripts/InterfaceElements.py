@@ -49,7 +49,7 @@ class Button:
             if mclick[0] == 1:
                 if action is not None:
                     action()
-                    pygame.time.delay(300)
+                    pygame.time.delay(50)
         else:
             if self.active is not None:
                 pygame.draw.rect(dp, self.incative, (x, y, self.width, self.height))
@@ -59,4 +59,53 @@ class Button:
             print_text(str(text), textcolor, textpos[0] + x, textpos[1] + y, textsize, display=dp, font=textfont)
 
 
-
+keys = {
+    "1": pygame.K_1,
+    "2": pygame.K_2,
+    "3": pygame.K_3,
+    "4": pygame.K_4,
+    "5": pygame.K_5,
+    "6": pygame.K_6,
+    "7": pygame.K_7,
+    "8": pygame.K_8,
+    "9": pygame.K_9,
+    "0": pygame.K_0,
+    "q": pygame.K_q,
+    "w": pygame.K_w,
+    "e": pygame.K_e,
+    "r": pygame.K_r,
+    "t": pygame.K_t,
+    "y": pygame.K_y,
+    "u": pygame.K_u,
+    "i": pygame.K_i,
+    "o": pygame.K_o,
+    "p": pygame.K_p,
+    "[": pygame.K_LEFTBRACKET,
+    "]": pygame.K_RIGHTBRACKET,
+    "|": pygame.K_BACKSLASH,
+    "a": pygame.K_a,
+    "s": pygame.K_s,
+    "d": pygame.K_d,
+    "f": pygame.K_f,
+    "g": pygame.K_g,
+    "h": pygame.K_h,
+    "j": pygame.K_j,
+    "k": pygame.K_k,
+    "l": pygame.K_l,
+    ";": pygame.K_SEMICOLON,
+    "'": pygame.K_QUOTE,
+    "z": pygame.K_z,
+    "x": pygame.K_x,
+    "c": pygame.K_c,
+    "v": pygame.K_v,
+    "b": pygame.K_b,
+    "n": pygame.K_n,
+    "m": pygame.K_m,
+    ",": pygame.K_COMMA,
+    ".": pygame.K_PERIOD,
+    "/": pygame.K_SLASH,
+    "leftarrow": pygame.K_LEFT,
+    "uparrow": pygame.K_UP,
+    "downarrow": pygame.K_DOWN,
+    "rightarrow": pygame.K_RIGHT,
+}
