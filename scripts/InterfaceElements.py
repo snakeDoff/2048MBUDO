@@ -26,6 +26,12 @@ def textScale(elem):
         return 1
 
 
+def get_key(val, dict):
+    for key, value in dict.items():
+        if val == value:
+            return key
+
+
 class Button:
     def __init__(self, width, height, activecolor=None, inactivecolor=None, image=None, imgpos=None, imgsize=None):
         self.width = width
@@ -52,7 +58,7 @@ class Button:
                         action(actionkey)
                     else:
                         action()
-                    pygame.time.wait(500)
+                    pygame.time.wait(501)
         else:
             if self.active is not None:
                 pygame.draw.rect(dp, self.incative, (x, y, self.width, self.height))
@@ -107,8 +113,8 @@ keys = {
     ",": pygame.K_COMMA,
     ".": pygame.K_PERIOD,
     "/": pygame.K_SLASH,
-    "leftarrow": pygame.K_LEFT,
-    "uparrow": pygame.K_UP,
-    "downarrow": pygame.K_DOWN,
-    "rightarrow": pygame.K_RIGHT,
+    "left": pygame.K_LEFT,
+    "up": pygame.K_UP,
+    "down": pygame.K_DOWN,
+    "right": pygame.K_RIGHT,
 }

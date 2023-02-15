@@ -56,6 +56,12 @@ class GameInterface(Game):
             "16:9": ['1280x720', '1600x900', '1920x1080', '2560x1440', '3840x2160'],
             "16:10": ['1440x900', '1680x1050', '2560x1600', '3840x2400']
         }
+        self.bindedButtons = {
+            'up': pygame.K_w,
+            'down': pygame.K_s,
+            'left': pygame.K_a,
+            'right': pygame.K_d
+        }
         self.dss = "1:1"
         self.curds = 0
         self.curres = 0
@@ -272,19 +278,19 @@ class GameInterface(Game):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                 elif event.type == pygame.KEYDOWN and (not self.checkwin() or self.conti) and not self.checklose():
-                    if event.key == pygame.K_w:
+                    if event.key == self.bindedButtons['up']:
                         command = 'up'
                         self.makebackup()
                         self.move(command)
-                    elif event.key == pygame.K_s:
+                    elif event.key == self.bindedButtons['down']:
                         command = 'down'
                         self.makebackup()
                         self.move(command)
-                    elif event.key == pygame.K_a:
+                    elif event.key == self.bindedButtons['left']:
                         command = 'left'
                         self.makebackup()
                         self.move(command)
-                    elif event.key == pygame.K_d:
+                    elif event.key == self.bindedButtons['right']:
                         command = 'right'
                         self.makebackup()
                         self.move(command)
@@ -485,6 +491,10 @@ class GameInterface(Game):
         prevres = IE.Button(width=60, height=40, image="images/leftarrow.png", imgpos=(0, 0), imgsize=(60, 40))
         nextss = IE.Button(width=60, height=40, image="images/rightarrow.png", imgpos=(0, 0), imgsize=(60, 40))
         prevss = IE.Button(width=60, height=40, image="images/leftarrow.png", imgpos=(0, 0), imgsize=(60, 40))
+        bindupb = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        binddownb = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        bindleftb = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
+        bindrightb = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
 
         while loop:
             print(pygame.mouse.get_pressed()[0])
@@ -504,13 +514,28 @@ class GameInterface(Game):
             prevres.draw(x=self.width - 300, y=200, dp=self.display, action=self.moveres, actionkey='prev')
             nextss.draw(x=self.width - 100, y=150, dp=self.display, action=self.movess, actionkey='next')
             prevss.draw(x=self.width - 250, y=150, dp=self.display, action=self.movess, actionkey='prev')
+            bindupb.draw(x=350, y=300, dp=self.display,
+                         text=f'{IE.get_key(self.bindedButtons["up"], IE.keys)}',
+                         textcolor=self.colors['black'],
+                         textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='up')
+            binddownb.draw(x=350, y=350, dp=self.display,
+                           text=f'{IE.get_key(self.bindedButtons["down"], IE.keys)}',
+                           textcolor=self.colors['black'],
+                           textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='down')
+            bindrightb.draw(x=350, y=450, dp=self.display,
+                            text=f'{IE.get_key(self.bindedButtons["right"], IE.keys)}',
+                            textcolor=self.colors['black'],
+                            textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='right')
+            bindleftb.draw(x=350, y=400, dp=self.display,
+                           text=f'{IE.get_key(self.bindedButtons["left"], IE.keys)}',
+                           textcolor=self.colors['black'],
+                           textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='left')
             self.drawSettingsText()
             if self.BTm:
                 loop = False
                 self.startMenu()
             pygame.display.update()
             self.clock.tick(self.fps)
-
     def moveres(self, key):
         if key == 'prev':
             if self.curres == 0:
@@ -535,6 +560,7 @@ class GameInterface(Game):
             else:
                 self.curds += 1
         self.curres = 0
+
     def confirmB(self):
         self.changing = True
         setres = self.resolutions[list(self.resolutions.keys())[self.curds]][self.curres].split('x')
@@ -546,6 +572,16 @@ class GameInterface(Game):
             self.display = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
         self.changing = False
 
+    def bindbuttons(self, key):
+        loop = True
+        while loop:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    quit(0)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key in IE.keys.values():
+                        self.bindedButtons[key] = event.key
+                        loop = False
 
 
 
