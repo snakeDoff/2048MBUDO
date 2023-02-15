@@ -450,7 +450,30 @@ class GameInterface(Game):
         else:
             self.fullscrined = 0
 
+    def drawSettingsText(self):
+        IE.print_text('Full-screen :', x=100, y=100, display=self.display, color=self.colors['black'],
+                      size=25)
+        IE.print_text('Aspect ratio :', x=100, y=150, display=self.display, color=self.colors['black'],
+                      size=25)
+        IE.print_text('Resolution :', x=100, y=200, display=self.display, color=self.colors['black'],
+                      size=25)
+        IE.print_text('Buttons :', x=100, y=250, display=self.display, color=self.colors['black'],
+                      size=25)
+        IE.print_text('Move UP :', x=150, y=300, display=self.display, color=self.colors['black'],
+                      size=25)
+        IE.print_text('Move DOWN :', x=150, y=350, display=self.display, color=self.colors['black'],
+                      size=25)
+        IE.print_text('Move LEFT :', x=150, y=400, display=self.display, color=self.colors['black'],
+                      size=25)
+        IE.print_text('Move RIGHT :', x=150, y=450, display=self.display, color=self.colors['black'],
+                      size=25)
+        IE.print_text(list(self.resolutions.keys())[self.curds], x=self.width - 175, y=150,
+                      color=self.colors['black'], size=25)
+        IE.print_text(self.resline[self.curres],
+                      x=(self.width - 220 if len(self.resline[self.curres]) < 8 else self.width - 240), y=200,
+                      color=self.colors['black'], size=25)
     def startSettings(self):
+        self.changing = False
         loop = True
         self.BTm = 0
         pygame.display.set_caption('2048 by MBUDO : Settings')
@@ -462,11 +485,13 @@ class GameInterface(Game):
         prevres = IE.Button(width=60, height=40, image="images/leftarrow.png", imgpos=(0, 0), imgsize=(60, 40))
         nextss = IE.Button(width=60, height=40, image="images/rightarrow.png", imgpos=(0, 0), imgsize=(60, 40))
         prevss = IE.Button(width=60, height=40, image="images/leftarrow.png", imgpos=(0, 0), imgsize=(60, 40))
+
         while loop:
+            print(pygame.mouse.get_pressed()[0])
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-            resline = self.resolutions[list(self.resolutions.keys())[self.curds]]
+            self.resline = self.resolutions[list(self.resolutions.keys())[self.curds]]
             self.display.fill(self.colors['background'])
             backbut.draw(x=(self.width - 130), y=50, dp=self.display, action=self.BTmenu)
             fscreenbut.draw(x=(self.width - 250), y=100, dp=self.display, text=str(self.isfullscrined()),
@@ -475,66 +500,52 @@ class GameInterface(Game):
             confsetbut.draw(x=self.width - 240, y=self.height - 100, dp=self.display,
                             text='confirm', textcolor=self.colors['black'], textsize=25, textpos=(2, 2),
                             action=self.confirmB)
-            nextres.draw(x=self.width - 100, y=200, dp=self.display, action=self.rarres)
-            prevres.draw(x=self.width - 300, y=200, dp=self.display, action=self.larrres)
-            nextss.draw(x=self.width - 100, y=150, dp=self.display, action=self.rarss)
-            prevss.draw(x=self.width - 250, y=150, dp=self.display, action=self.larss)
-            IE.print_text(list(self.resolutions.keys())[self.curds], x=self.width - 175, y=150,
-                          color=self.colors['black'], size=25)
-            IE.print_text(resline[self.curres],
-                          x=(self.width - 220 if len(resline[self.curres]) < 8 else self.width - 240), y=200,
-                          color=self.colors['black'], size=25)
-            IE.print_text('Full-screen :', x=100, y=100, display=self.display, color=self.colors['black'],
-                          size=25)
-            IE.print_text('Aspect ratio :', x=100, y=150, display=self.display, color=self.colors['black'],
-                          size=25)
-            IE.print_text('Resolution :', x=100, y=200, display=self.display, color=self.colors['black'],
-                          size=25)
-
+            nextres.draw(x=self.width - 100, y=200, dp=self.display, action=self.moveres, actionkey='next')
+            prevres.draw(x=self.width - 300, y=200, dp=self.display, action=self.moveres, actionkey='prev')
+            nextss.draw(x=self.width - 100, y=150, dp=self.display, action=self.movess, actionkey='next')
+            prevss.draw(x=self.width - 250, y=150, dp=self.display, action=self.movess, actionkey='prev')
+            self.drawSettingsText()
             if self.BTm:
                 loop = False
                 self.startMenu()
             pygame.display.update()
             self.clock.tick(self.fps)
 
-    def larrres(self):
-        if self.curres == 0:
-            self.curres = len(self.resolutions[list(self.resolutions.keys())[self.curds]]) - 1
+    def moveres(self, key):
+        if key == 'prev':
+            if self.curres == 0:
+                self.curres = len(self.resolutions[list(self.resolutions.keys())[self.curds]]) - 1
+            else:
+                self.curres -= 1
         else:
-            self.curres -= 1
+            if self.curres == len(self.resolutions[list(self.resolutions.keys())[self.curds]]) - 1:
+                self.curres = 0
+            else:
+                self.curres += 1
 
-    def rarres(self):
-        if self.curres == len(self.resolutions[list(self.resolutions.keys())[self.curds]]) - 1:
-            self.curres = 0
+    def movess(self, key):
+        if key == 'prev':
+            if self.curds == 0:
+                self.curds = len(self.resolutions.keys()) - 1
+            else:
+                self.curds -= 1
         else:
-            self.curres += 1
-
-    def larss(self):
-        if self.curds == 0:
-            self.curds = len(self.resolutions.keys()) - 1
-        else:
-            self.curds -= 1
+            if self.curds == len(self.resolutions.keys()) - 1:
+                self.curds = 0
+            else:
+                self.curds += 1
         self.curres = 0
-
-    def rarss(self):
-        if self.curds == len(self.resolutions.keys()) - 1:
-            self.curds = 0
-        else:
-            self.curds += 1
-        self.curres = 0
-
     def confirmB(self):
+        self.changing = True
+        setres = self.resolutions[list(self.resolutions.keys())[self.curds]][self.curres].split('x')
+        self.width = int(setres[0])
+        self.height = int(setres[1])
         if not self.fullscrined:
-            setres = self.resolutions[list(self.resolutions.keys())[self.curds]][self.curres].split('x')
-            self.width = int(setres[0])
-            self.height = int(setres[1])
             self.display = pygame.display.set_mode((self.width, self.height))
         else:
-            setres = self.resolutions[list(self.resolutions.keys())[self.curds]][self.curres].split('x')
-            self.width = int(setres[0])
-            self.height = int(setres[1])
             self.display = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
-        pygame.time.delay(500)
+        self.changing = False
+
 
 
 
