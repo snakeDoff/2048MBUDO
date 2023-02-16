@@ -1,0 +1,9 @@
+{
+    "fullscreen": 1,
+    "aspectratio": "1:1",
+    "resolution": 1,
+    "up": "w",
+    "down": "s",
+    "left": "a",
+    "right": "d"
+}

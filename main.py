@@ -4,6 +4,14 @@ import pygame
 import json
 
 
+def restart():
+    import sys
+    print("argv was", sys.argv)
+    print("sys.executable was", sys.executable)
+    print("restart now")
+
+    import os
+    os.execv(sys.executable, ['python'] + sys.argv)
 class GameInterface(Game):
     def __init__(self):
         super().__init__()
@@ -67,7 +75,11 @@ class GameInterface(Game):
         self.curres = 0
         self.resline = self.resolutions[self.dss]
         pygame.init()
-        self.display = pygame.display.set_mode((self.width, self.width))
+        self.settingssaves('load')
+        if self.fullscrined:
+            self.display = pygame.display.set_mode((self.width, self.width), pygame.FULLSCREEN)
+        else:
+            self.display = pygame.display.set_mode((self.width, self.width))
         pygame.display.set_icon(self.icon)
         self.clock = pygame.time.Clock()
 
@@ -131,6 +143,38 @@ class GameInterface(Game):
     def back(self):
         command = 'back'
         self.move(command)
+
+    def settingssaves(self, key):
+        if key == 'upload':
+            save = {
+                "fullscreen": self.fullscrined,
+                "aspectratio": list(self.resolutions.keys())[self.curds],
+                "resolution": self.curres,
+                "up": IE.get_key(self.bindedButtons["up"], IE.keys),
+                "down": IE.get_key(self.bindedButtons["down"], IE.keys),
+                "left": IE.get_key(self.bindedButtons["left"], IE.keys),
+                "right": IE.get_key(self.bindedButtons["right"], IE.keys)
+            }
+            with open(f"saves/settings.json", 'w') as F:
+                json.dump(save, F, indent=4)
+
+        if key == 'load':
+            try:
+                with open(f"saves/settings.json", 'rb') as F:
+                    save = json.load(F)
+            except FileNotFoundError:
+                self.settingssaves('upload')
+                with open(f"saves/settings.json", 'rb') as F:
+                    save = json.load(F)
+            finally:
+                self.fullscrined = save["fullscreen"]
+                self.width, self.height = list(map(int, self.resolutions[save["aspectratio"]][save["resolution"]].split('x')))
+                self.bindedButtons['up'] = IE.keys[save["up"]]
+                self.bindedButtons['down'] = IE.keys[save["down"]]
+                self.bindedButtons['left'] = IE.keys[save["left"]]
+                self.bindedButtons['right'] = IE.keys[save["right"]]
+
+
 
     def cut(self):
         if self.possiblecuts - self.usedcuts > 0:
@@ -473,10 +517,10 @@ class GameInterface(Game):
                       size=25)
         IE.print_text('Move RIGHT :', x=150, y=450, display=self.display, color=self.colors['black'],
                       size=25)
-        IE.print_text(list(self.resolutions.keys())[self.curds], x=self.width - 175, y=150,
+        IE.print_text(list(self.resolutions.keys())[self.curds], x=600 - 175, y=150,
                       color=self.colors['black'], size=25)
         IE.print_text(self.resline[self.curres],
-                      x=(self.width - 220 if len(self.resline[self.curres]) < 8 else self.width - 240), y=200,
+                      x=(600 - 220 if len(self.resline[self.curres]) < 8 else 600 - 240), y=200,
                       color=self.colors['black'], size=25)
     def startSettings(self):
         self.changing = False
@@ -497,23 +541,22 @@ class GameInterface(Game):
         bindrightb = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
 
         while loop:
-            print(pygame.mouse.get_pressed()[0])
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
             self.resline = self.resolutions[list(self.resolutions.keys())[self.curds]]
             self.display.fill(self.colors['background'])
-            backbut.draw(x=(self.width - 130), y=50, dp=self.display, action=self.BTmenu)
-            fscreenbut.draw(x=(self.width - 250), y=100, dp=self.display, text=str(self.isfullscrined()),
+            backbut.draw(x=470, y=50, dp=self.display, action=self.BTmenu)
+            fscreenbut.draw(x=350, y=100, dp=self.display, text=str(self.isfullscrined()),
                             textcolor=self.colors['black'], textpos=(4, 2), textsize=25, textfont='fonts/symbols.ttc',
                             action=self.setfullscreen)
-            confsetbut.draw(x=self.width - 240, y=self.height - 100, dp=self.display,
+            confsetbut.draw(x=360, y=500, dp=self.display,
                             text='confirm', textcolor=self.colors['black'], textsize=25, textpos=(2, 2),
                             action=self.confirmB)
-            nextres.draw(x=self.width - 100, y=200, dp=self.display, action=self.moveres, actionkey='next')
-            prevres.draw(x=self.width - 300, y=200, dp=self.display, action=self.moveres, actionkey='prev')
-            nextss.draw(x=self.width - 100, y=150, dp=self.display, action=self.movess, actionkey='next')
-            prevss.draw(x=self.width - 250, y=150, dp=self.display, action=self.movess, actionkey='prev')
+            nextres.draw(x=500, y=200, dp=self.display, action=self.moveres, actionkey='next')
+            prevres.draw(x=300, y=200, dp=self.display, action=self.moveres, actionkey='prev')
+            nextss.draw(x=500, y=150, dp=self.display, action=self.movess, actionkey='next')
+            prevss.draw(x=350, y=150, dp=self.display, action=self.movess, actionkey='prev')
             bindupb.draw(x=350, y=300, dp=self.display,
                          text=f'{IE.get_key(self.bindedButtons["up"], IE.keys)}',
                          textcolor=self.colors['black'],
@@ -562,15 +605,12 @@ class GameInterface(Game):
         self.curres = 0
 
     def confirmB(self):
-        self.changing = True
         setres = self.resolutions[list(self.resolutions.keys())[self.curds]][self.curres].split('x')
-        self.width = int(setres[0])
-        self.height = int(setres[1])
-        if not self.fullscrined:
-            self.display = pygame.display.set_mode((self.width, self.height))
-        else:
-            self.display = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
-        self.changing = False
+        self.width1 = int(setres[0])
+        self.height1 = int(setres[1])
+        self.settingssaves('upload')
+        restart()
+
 
     def bindbuttons(self, key):
         loop = True
