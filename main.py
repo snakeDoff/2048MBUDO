@@ -11,6 +11,8 @@ def restart():
     print("restart now")
     import os
     os.execv(sys.executable, ['python'] + sys.argv)
+
+
 class GameInterface(Game):
     def __init__(self):
         super().__init__()
@@ -21,7 +23,7 @@ class GameInterface(Game):
         self.win = None
         self.lose = None
         self.sizep = 0
-        self.icon = pygame.image.load('images/logo.jpg')
+        self.icon = pygame.image.load('images/logo1.png')
         self.startX = 50
         self.startY = 50
         self.plineW = 10
@@ -177,8 +179,6 @@ class GameInterface(Game):
                 self.bindedButtons['left'] = IE.keys[save["left"]]
                 self.bindedButtons['right'] = IE.keys[save["right"]]
 
-
-
     def cut(self):
         if self.possiblecuts - self.usedcuts > 0:
             self.usedcuts += 1
@@ -267,8 +267,10 @@ class GameInterface(Game):
             self.useddob = 0
             self.usedcuts = 0
             self.makebackup()
+
     def contGame(self):
         self.conti = 1
+
     def drawwin(self):
         backbut1 = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
         restart = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
@@ -442,6 +444,8 @@ class GameInterface(Game):
         loop = True
         self.BTm = 0
         self.end = 0
+        self.startX = (self.width - 400) / 2
+        self.startY = (self.height - 600) / 2
         pygame.display.set_caption('2048 by MBUDO : Choosing mode')
         larr = IE.Button(width=100, height=50, image='images/leftarrow.png',
                          imgsize=(95, 45), imgpos=(5, 5), activecolor=self.colors['lines'],
@@ -458,12 +462,12 @@ class GameInterface(Game):
                 if event.type == pygame.QUIT:
                     pygame.quit()
             self.display.fill(self.colors['background'])
-            IE.draw_image(f'images/{self.gamemodes[self.cur]}.png', 400, 400, 100, 50, self.display)
-            larr.draw(x=100, y=450, dp=self.display, action=self.larrf)
-            rarr.draw(x=400, y=450, dp=self.display, action=self.rarrf)
-            mbut.draw(x=250, y=450, dp=self.display,
+            IE.draw_image(f'images/{self.gamemodes[self.cur]}.png', 400, 400, self.startX, self.startY + 50, self.display)
+            larr.draw(x=self.startX, y=self.startY+450, dp=self.display, action=self.larrf)
+            rarr.draw(x=self.startX + 300, y=self.startY+450, dp=self.display, action=self.rarrf)
+            mbut.draw(x=self.startX + 150, y=self.startY+450, dp=self.display,
                       text='Start game', textcolor=self.colors['black'], textsize=15, textpos=(5, 15), action=self.endlop)
-            backbut.draw(x=(self.width - 130), y=50, dp=self.display, action=self.BTmenu)
+            backbut.draw(x=self.startX + 370, y=self.startY + 50, dp=self.display, action=self.BTmenu)
             if self.end == 1:
                 loop = False
                 self.setScale()
@@ -507,30 +511,33 @@ class GameInterface(Game):
             self.fullscrined = 0
 
     def drawSettingsText(self):
-        IE.print_text('Full-screen :', x=100, y=100, display=self.display, color=self.colors['black'],
+        IE.print_text('Full-screen :', x=self.startX, y=self.startY + 50, display=self.display, color=self.colors['black'],
                       size=25)
-        IE.print_text('Aspect ratio :', x=100, y=150, display=self.display, color=self.colors['black'],
+        IE.print_text('Aspect ratio :', x=self.startX, y=self.startY + 100, display=self.display, color=self.colors['black'],
                       size=25)
-        IE.print_text('Resolution :', x=100, y=200, display=self.display, color=self.colors['black'],
+        IE.print_text('Resolution :', x=self.startX, y=self.startY + 150, display=self.display, color=self.colors['black'],
                       size=25)
-        IE.print_text('Buttons :', x=100, y=250, display=self.display, color=self.colors['black'],
+        IE.print_text('Buttons :', x=self.startX, y=self.startY + 200, display=self.display, color=self.colors['black'],
                       size=25)
-        IE.print_text('Move UP :', x=150, y=300, display=self.display, color=self.colors['black'],
+        IE.print_text('Move UP :', x=self.startX + 50, y=self.startY + 250, display=self.display, color=self.colors['black'],
                       size=25)
-        IE.print_text('Move DOWN :', x=150, y=350, display=self.display, color=self.colors['black'],
+        IE.print_text('Move DOWN :', x=self.startX + 50, y=self.startY + 300, display=self.display, color=self.colors['black'],
                       size=25)
-        IE.print_text('Move LEFT :', x=150, y=400, display=self.display, color=self.colors['black'],
+        IE.print_text('Move LEFT :', x=self.startX + 50, y=self.startY + 350, display=self.display, color=self.colors['black'],
                       size=25)
-        IE.print_text('Move RIGHT :', x=150, y=450, display=self.display, color=self.colors['black'],
+        IE.print_text('Move RIGHT :', x=self.startX + 50, y=self.startY + 400, display=self.display, color=self.colors['black'],
                       size=25)
-        IE.print_text(list(self.resolutions.keys())[self.curds], x=600 - 175, y=150,
+        IE.print_text(list(self.resolutions.keys())[self.curds], x=self.startX + 500 - 175, y=self.startY + 100,
                       color=self.colors['black'], size=25)
         IE.print_text(self.resline[self.curres],
-                      x=(600 - 220 if len(self.resline[self.curres]) < 8 else 600 - 240), y=200,
+                      x=(self.startX + 500 - 220 if len(self.resline[self.curres]) < 8
+                         else self.startX + 500 - 240), y=self.startY + 150,
                       color=self.colors['black'], size=25)
     def startSettings(self):
         self.changing = False
         loop = True
+        self.startX = (self.width - 400) / 2
+        self.startY = (self.height - 500) / 2
         self.BTm = 0
         pygame.display.set_caption('2048 by MBUDO : Settings')
         backbut = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'],
@@ -552,30 +559,30 @@ class GameInterface(Game):
                     pygame.quit()
             self.resline = self.resolutions[list(self.resolutions.keys())[self.curds]]
             self.display.fill(self.colors['background'])
-            backbut.draw(x=470, y=50, dp=self.display, action=self.BTmenu)
-            fscreenbut.draw(x=350, y=100, dp=self.display, text=str(self.isfullscrined()),
+            backbut.draw(x=self.startX + 370, y=self.startY, dp=self.display, action=self.BTmenu)
+            fscreenbut.draw(x=self.startX + 250, y=self.startY + 50, dp=self.display, text=str(self.isfullscrined()),
                             textcolor=self.colors['black'], textpos=(4, 2), textsize=25, textfont='fonts/symbols.ttc',
                             action=self.setfullscreen)
-            confsetbut.draw(x=360, y=500, dp=self.display,
+            confsetbut.draw(x=self.startX + 260, y=self.startY + 450, dp=self.display,
                             text='confirm', textcolor=self.colors['black'], textsize=25, textpos=(2, 2),
                             action=self.confirmB)
-            nextres.draw(x=500, y=200, dp=self.display, action=self.moveres, actionkey='next')
-            prevres.draw(x=300, y=200, dp=self.display, action=self.moveres, actionkey='prev')
-            nextss.draw(x=500, y=150, dp=self.display, action=self.movess, actionkey='next')
-            prevss.draw(x=350, y=150, dp=self.display, action=self.movess, actionkey='prev')
-            bindupb.draw(x=350, y=300, dp=self.display,
+            nextres.draw(x=self.startX + 400, y=self.startY + 150, dp=self.display, action=self.moveres, actionkey='next')
+            prevres.draw(x=self.startX + 200, y=self.startY + 150, dp=self.display, action=self.moveres, actionkey='prev')
+            nextss.draw(x=self.startX + 400, y=self.startY + 100, dp=self.display, action=self.movess, actionkey='next')
+            prevss.draw(x=self.startX + 250, y=self.startY + 100, dp=self.display, action=self.movess, actionkey='prev')
+            bindupb.draw(x=self.startX + 250, y=self.startY + 250, dp=self.display,
                          text=f'{IE.get_key(self.bindedButtons["up"], IE.keys)}',
                          textcolor=self.colors['black'],
                          textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='up')
-            binddownb.draw(x=350, y=350, dp=self.display,
+            binddownb.draw(x=self.startX + 250, y=self.startY + 300, dp=self.display,
                            text=f'{IE.get_key(self.bindedButtons["down"], IE.keys)}',
                            textcolor=self.colors['black'],
                            textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='down')
-            bindrightb.draw(x=350, y=450, dp=self.display,
+            bindrightb.draw(x=self.startX + 250, y=self.startY + 400, dp=self.display,
                             text=f'{IE.get_key(self.bindedButtons["right"], IE.keys)}',
                             textcolor=self.colors['black'],
                             textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='right')
-            bindleftb.draw(x=350, y=400, dp=self.display,
+            bindleftb.draw(x=self.startX + 250, y=self.startY + 350, dp=self.display,
                            text=f'{IE.get_key(self.bindedButtons["left"], IE.keys)}',
                            textcolor=self.colors['black'],
                            textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='left')
@@ -585,6 +592,7 @@ class GameInterface(Game):
                 self.startMenu()
             pygame.display.update()
             self.clock.tick(self.fps)
+
     def moveres(self, key):
         if key == 'prev':
             if self.curres == 0:
@@ -616,7 +624,6 @@ class GameInterface(Game):
         self.height1 = int(setres[1])
         self.settingssaves('upload')
         restart()
-
 
     def bindbuttons(self, key):
         loop = True
