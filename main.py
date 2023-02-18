@@ -533,6 +533,7 @@ class GameInterface(Game):
                       x=(self.startX + 500 - 220 if len(self.resline[self.curres]) < 8
                          else self.startX + 500 - 240), y=self.startY + 150,
                       color=self.colors['black'], size=25)
+
     def startSettings(self):
         self.changing = False
         loop = True
@@ -586,6 +587,24 @@ class GameInterface(Game):
                            text=f'{IE.get_key(self.bindedButtons["left"], IE.keys)}',
                            textcolor=self.colors['black'],
                            textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='left')
+
+            if len(IE.get_key(self.bindedButtons["up"], IE.keys)) > 1:
+                bindupb.width = 90
+            else:
+                bindupb.width = 30
+            if len(IE.get_key(self.bindedButtons["down"], IE.keys)) > 1:
+                binddownb.width = 90
+            else:
+                binddownb.width = 30
+            if len(IE.get_key(self.bindedButtons["left"], IE.keys)) > 1:
+                bindleftb.width = 90
+            else:
+                bindleftb.width = 30
+            if len(IE.get_key(self.bindedButtons["right"], IE.keys)) > 1:
+                bindrightb.width = 90
+            else:
+                bindrightb.width = 30
+
             self.drawSettingsText()
             if self.BTm:
                 loop = False
