@@ -1,9 +1,9 @@
 {
     "fullscreen": 0,
-    "aspectratio": "16:9",
-    "resolution": 1,
-    "up": "up",
-    "down": "down",
-    "left": "right",
-    "right": "left"
+    "aspectratio": "4:3",
+    "resolution": 0,
+    "up": "w",
+    "down": "s",
+    "left": "a",
+    "right": "d"
 }

@@ -1,13 +1,13 @@
 import pygame
 
 
-def print_text(message, color, x, y, size=50, display=pygame.display.set_mode(), font='fonts/Kefa.ttf'):
+def print_text(message, color, x, y, display, size=50, font='fonts/Kefa.ttf'):
     font_size = pygame.font.Font(font, size)
     text = font_size.render(message, True, color)
     display.blit(text, (x, y))
 
 
-def draw_image(image, width, height, x, y, dp=pygame.display.set_mode()):
+def draw_image(image, width, height, x, y, dp):
     img = pygame.image.load(image)
     img = pygame.transform.scale(img, (width, height))
     dp.blit(img, (x, y))
@@ -45,7 +45,7 @@ class Button:
             self.pic = pygame.image.load(self.image)
             self.pic = pygame.transform.scale(self.pic, tuple(self.imgsize))
 
-    def draw(self, x, y, dp=pygame.display.set_mode(), action=None, text=None, textcolor=None, textpos=None, textsize=None, actionkey=None,
+    def draw(self, x, y, dp, action=None, text=None, textcolor=None, textpos=None, textsize=None, actionkey=None,
              textfont='fonts/Kefa.ttf'):
         mpos = pygame.mouse.get_pos()
         mclick = pygame.mouse.get_pressed()
@@ -65,7 +65,7 @@ class Button:
         if self.image is not None and self.imgpos is not None and len(self.imgpos) != 0:
             dp.blit(self.pic, (self.imgpos[0] + x, self.imgpos[1] + y))
         if text is not None and textpos is not None and textcolor is not None and textsize is not None:
-            print_text(str(text), textcolor, textpos[0] + x, textpos[1] + y, textsize, display=dp, font=textfont)
+            print_text(str(text), textcolor, textpos[0] + x, textpos[1] + y, dp, textsize, font=textfont)
 
 
 keys = {

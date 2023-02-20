@@ -83,6 +83,7 @@ class GameInterface(Game):
             self.display = pygame.display.set_mode((self.width, self.width))
         pygame.display.set_icon(self.icon)
         self.clock = pygame.time.Clock()
+        print(type(self.display))
 
     def makebackup(self):
         self.backup = backuping(self.pole, self.backup)
@@ -110,13 +111,14 @@ class GameInterface(Game):
                                       self.startY + (self.psizeQ * i + self.plineW / 2) * self.scale,
                                       (self.psizeQ - self.plineW / 2) * self.scale,
                                       (self.psizeQ - self.plineW / 2) * self.scale))
-                    IE.print_text(self.pole[i][j], self.colors['bright'], display=self.display,
+                    IE.print_text(self.pole[i][j], self.colors['bright'],
                                   x=self.startX + (self.plineW / 2 + self.psizeQ * (j + 0.5) -
                                                    ((self.fontsize / 2) * len(self.pole[i][j])) // 2) * self.scale
                                   if (self.psizeQ / 2) - ((self.fontsize / 2) * len(self.pole[i][j])) // 2 > 0 else
                                   (self.startX + (self.plineW / 2 + self.psizeQ * j)),
                                   y=self.startY + (
                                           self.psizeQ * i + self.plineW / 2 + self.fontsize) * self.scale,
+                                  display=self.display,
                                   size=int(self.fontsize * self.scale * IE.textScale(self.pole[i][j])))
                 else:
                     pygame.draw.rect(self.display, self.colors[self.pole[i][j]],
@@ -125,21 +127,23 @@ class GameInterface(Game):
                                       (self.psizeQ - self.plineW / 2) * self.scale,
                                       (self.psizeQ - self.plineW / 2) * self.scale))
                     if self.pole[i][j] != '.' and int(self.pole[i][j]) in range(2, 5):
-                        IE.print_text(self.pole[i][j], self.colors['black'], display=self.display,
+                        IE.print_text(self.pole[i][j], self.colors['black'],
                                       x=self.startX + (self.plineW / 2 + self.psizeQ * (j + 0.5) -
                                                        ((self.fontsize / 2) * len(self.pole[i][j])) // 2) * self.scale,
                                       y=self.startY + (
                                               self.psizeQ * i + self.plineW / 2 + self.fontsize) * self.scale,
+                                      display=self.display,
                                       size=int(self.fontsize * self.scale * IE.textScale(self.pole[i][j])))
                     elif self.pole[i][j] != '.' and int(self.pole[i][j]) not in range(2, 5):
-                        IE.print_text(self.pole[i][j], self.colors['bright'], display=self.display,
+                        IE.print_text(self.pole[i][j], self.colors['bright'],
                                       x=self.startX + (self.plineW / 2 + self.psizeQ * (j + 0.5) -
                                                        ((self.fontsize / 2) * len(self.pole[i][j])) // 2) * self.scale,
                                       y=self.startY + (
                                               self.psizeQ * i + self.plineW / 2 + self.fontsize) * self.scale,
+                                      display=self.display,
                                       size=int(self.fontsize * self.scale * IE.textScale(self.pole[i][j])))
         IE.print_text(f'Your score: {self.score}', self.colors['black'], self.startX,
-                      self.startY + (self.psizeQ * self.psize + self.plineW / 2) * self.scale, 30, self.display)
+                      self.startY + (self.psizeQ * self.psize + self.plineW / 2) * self.scale, self.display, 30)
 
     def back(self):
         command = 'back'
@@ -419,11 +423,11 @@ class GameInterface(Game):
             IE.print_text('2048', self.colors['black'], self.startX + 100, 5, size=75, display=self.display)
             IE.print_text('by MBUDO', self.colors['black'], self.startX, 85, size=75, display=self.display)
             chmodebut.draw(self.startX, 200, text='Play', textcolor=self.colors['black'], textsize=50,
-                           textpos=(75, 5), action=self.endlop)
+                           textpos=(75, 5), action=self.endlop, dp=self.display)
             quitbut.draw(self.startX, 460, text='Quit', textcolor=self.colors['black'], textsize=50,
-                         textpos=(75, 5), action=self.close)
+                         textpos=(75, 5), action=self.close, dp=self.display)
             settingsbut.draw(self.startX, 330, text='Settings', textcolor=self.colors['black'], textsize=50,
-                             textpos=(75, 5), action=self.gtsettings)
+                             textpos=(75, 5), action=self.gtsettings, dp=self.display)
             if self.end == 1:
                 loop = False
                 self.startChose()
@@ -511,28 +515,28 @@ class GameInterface(Game):
             self.fullscrined = 0
 
     def drawSettingsText(self):
-        IE.print_text('Full-screen :', x=self.startX, y=self.startY + 50, display=self.display, color=self.colors['black'],
+        IE.print_text('Full-screen :', x=self.startX, y=self.startY + 50, color=self.colors['black'],display=self.display,
                       size=25)
-        IE.print_text('Aspect ratio :', x=self.startX, y=self.startY + 100, display=self.display, color=self.colors['black'],
+        IE.print_text('Aspect ratio :', x=self.startX, y=self.startY + 100,  color=self.colors['black'],display=self.display,
                       size=25)
-        IE.print_text('Resolution :', x=self.startX, y=self.startY + 150, display=self.display, color=self.colors['black'],
+        IE.print_text('Resolution :', x=self.startX, y=self.startY + 150,  color=self.colors['black'],display=self.display,
                       size=25)
-        IE.print_text('Buttons :', x=self.startX, y=self.startY + 200, display=self.display, color=self.colors['black'],
+        IE.print_text('Buttons :', x=self.startX, y=self.startY + 200,  color=self.colors['black'],display=self.display,
                       size=25)
-        IE.print_text('Move UP :', x=self.startX + 50, y=self.startY + 250, display=self.display, color=self.colors['black'],
+        IE.print_text('Move UP :', x=self.startX + 50, y=self.startY + 250,  color=self.colors['black'],display=self.display,
                       size=25)
-        IE.print_text('Move DOWN :', x=self.startX + 50, y=self.startY + 300, display=self.display, color=self.colors['black'],
+        IE.print_text('Move DOWN :', x=self.startX + 50, y=self.startY + 300,  color=self.colors['black'],display=self.display,
                       size=25)
-        IE.print_text('Move LEFT :', x=self.startX + 50, y=self.startY + 350, display=self.display, color=self.colors['black'],
+        IE.print_text('Move LEFT :', x=self.startX + 50, y=self.startY + 350,  color=self.colors['black'],display=self.display,
                       size=25)
         IE.print_text('Move RIGHT :', x=self.startX + 50, y=self.startY + 400, display=self.display, color=self.colors['black'],
                       size=25)
         IE.print_text(list(self.resolutions.keys())[self.curds], x=self.startX + 500 - 175, y=self.startY + 100,
-                      color=self.colors['black'], size=25)
+                      color=self.colors['black'], display=self.display, size=25)
         IE.print_text(self.resline[self.curres],
                       x=(self.startX + 500 - 220 if len(self.resline[self.curres]) < 8
                          else self.startX + 500 - 240), y=self.startY + 150,
-                      color=self.colors['black'], size=25)
+                      color=self.colors['black'], display=self.display, size=25)
 
     def startSettings(self):
         self.changing = False
@@ -587,7 +591,6 @@ class GameInterface(Game):
                            text=f'{IE.get_key(self.bindedButtons["left"], IE.keys)}',
                            textcolor=self.colors['black'],
                            textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='left')
-
             if len(IE.get_key(self.bindedButtons["up"], IE.keys)) > 1:
                 bindupb.width = 90
             else:
@@ -604,7 +607,6 @@ class GameInterface(Game):
                 bindrightb.width = 90
             else:
                 bindrightb.width = 30
-
             self.drawSettingsText()
             if self.BTm:
                 loop = False
@@ -652,13 +654,14 @@ class GameInterface(Game):
                     quit(0)
                 elif event.type == pygame.KEYDOWN:
                     if event.key in IE.keys.values():
-                        self.bindedButtons[key] = event.key
+                        if event.key in self.bindedButtons.values():
+                            self.bindedButtons[IE.get_key(event.key, self.bindedButtons)] = self.bindedButtons[key]
+                            self.bindedButtons[key] = event.key
+                        else:
+                            self.bindedButtons[key] = event.key
                         loop = False
 
 
-
-
-# a = Game()
-# a.start()
-a = GameInterface()
-a.startMenu()
+if __name__ == "__main__":
+    a = GameInterface()
+    a.startMenu()
