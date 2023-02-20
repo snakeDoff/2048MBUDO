@@ -88,15 +88,12 @@ class Game:
                             self.pole[i][j] == self.pole[i + 1][j] or \
                             self.pole[i][j] == self.pole[i - 1][j]:
                         return False
-                    else:
-                        return True
             if self.pole[0][0] == self.pole[0][1] or self.pole[0][0] == self.pole[1][0] or \
                     self.pole[-1][0] == self.pole[-2][0] or self.pole[-1][0] == self.pole[-1][1] or \
                     self.pole[0][-1] == self.pole[0][-2] or self.pole[0][-1] == self.pole[1][-1] or \
                     self.pole[-1][-1] == self.pole[-1][-2] or self.pole[-1][-1] == self.pole[-2][-1]:
                 return False
-            else:
-                return True
+        return False if len(self.clears) != 0 else True
 
     def swipedown(self, k):
         for i1 in range(self.psize - 1, 0, -1):

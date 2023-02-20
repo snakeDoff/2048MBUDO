@@ -297,7 +297,7 @@ class GameInterface(Game):
         backbut1.draw((self.width / 2 - 150), self.height / 2, self.display, action=self.BTchoose, text='back to menu',
                       textsize=40, textpos=(5, 5), textcolor=self.colors['black'])
         restart.draw((self.width / 2 - 150), self.height / 2 + 60, self.display, action=self.Brestart, text='restart',
-                      textsize=40, textpos=(65, 5), textcolor=self.colors['black'])
+                     textsize=40, textpos=(65, 5), textcolor=self.colors['black'])
         continu.draw((self.width / 2 - 150), self.height / 2 + 120, self.display, action=self.contGame, text='continue',
                      textsize=40, textpos=(55, 5), textcolor=self.colors['black'])
     def drawlose(self):
