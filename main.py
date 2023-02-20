@@ -78,16 +78,17 @@ class GameInterface(Game):
         pygame.init()
         self.settingssaves('load')
         if self.fullscrined:
-            self.display = pygame.display.set_mode((self.width, self.width), pygame.FULLSCREEN)
+            self.display = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
         else:
-            self.display = pygame.display.set_mode((self.width, self.width))
+            self.display = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_icon(self.icon)
         self.clock = pygame.time.Clock()
-        print(type(self.display))
 
     def makebackup(self):
         self.backup = backuping(self.pole, self.backup)
         self.scoreBack = self.score
+        self.useddobBack = self.useddob
+        self.usedcutsBack = self.usedcuts
 
     def drawpole(self):
         for y in range(0, self.sizep + 1):
@@ -96,7 +97,6 @@ class GameInterface(Game):
                               self.startY + (self.psizeQ * y) * self.scale),
                              (self.startX + (self.psizeQ * self.sizep) * self.scale + self.plineW / 2,
                               self.startY + (self.psizeQ * y) * self.scale), self.plineW)
-
         for x in range(0, self.sizep + 1):
             pygame.draw.line(self.display, self.colors['lines'],
                              (self.startX + (self.psizeQ * x) * self.scale, self.startY),
@@ -147,6 +147,8 @@ class GameInterface(Game):
 
     def back(self):
         command = 'back'
+        self.usedcuts = self.usedcutsBack
+        self.useddob = self.useddobBack
         self.move(command)
 
     def settingssaves(self, key):
@@ -247,7 +249,9 @@ class GameInterface(Game):
             "useddob": self.useddob,
             "scoreBack": self.scoreBack,
             "poleBack": self.backup,
-            "continue": self.conti
+            "continue": self.conti,
+            "useddobBack": self.useddobBack,
+            "usedcutsBack": self.usedcutsBack
         }
         with open(f"saves/{self.psize}.json", 'w') as F:
             json.dump(save, F, indent=4)
@@ -264,12 +268,17 @@ class GameInterface(Game):
                 self.scoreBack = save["scoreBack"]
                 self.backup = save["poleBack"]
                 self.conti = save["continue"]
-        except FileNotFoundError:
+                self.usedcutsBack = save["usedcutsBack"]
+                self.useddobBack = save["useddobBack"]
+        except FileNotFoundError and KeyError:
             self.spawnpole(self.psize)
             self.score = 0
             self.conti = 0
             self.useddob = 0
             self.usedcuts = 0
+            self.useddobBack = 0
+            self.usedcutsBack = 0
+            self.spawn()
             self.makebackup()
 
     def contGame(self):
