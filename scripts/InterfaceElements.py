@@ -118,9 +118,3 @@ keys = {
     "down": pygame.K_DOWN,
     "right": pygame.K_RIGHT,
 }
-
-topscore ={
-    "3x3": [0, 0],
-    "4x4": [0, 0],
-    "8x8": [0, 0]
-}
