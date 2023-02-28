@@ -693,11 +693,45 @@ class GameInterface(Game):
                         else:
                             self.bindedButtons[key] = event.key
                         loop = False
+
+    def drawTopScores(self):
+        w = self.width - self.startX * 2
+        h = self.height - self.startY * 2 - 150
+        surface = pygame.Surface((w, h))
+        surface.fill(self.colors['background'])
+        hs = 45
+        IE.print_text('mode', self.colors['black'], 0, 5, surface, 30)
+        IE.print_text('casual', self.colors['black'], 100, 5, surface, 30)
+        IE.print_text('gigachad mode', self.colors['black'], 300, 5, surface, 30)
+        step = (h - hs * len(self.topscore.keys())) / (len(self.topscore.keys()) + 2)
+        for index, key in enumerate(list(self.topscore.keys())):
+            ts = pygame.Surface((w, hs))
+            ts.fill(self.colors["background"])
+            IE.print_text(str(key), self.colors["black"], 5, 5, ts, 30)
+            wt = len(str(self.topscore[key][0])) * 45 
+            ee = pygame.Surface((wt, 30))
+            ee.fill(self.colors["background"])
+            IE.print_text(str(self.topscore[key][0]), self.colors['black'], 0, 0, ee, 30)
+            if wt > 300:
+                ee = pygame.transform.scale(ee, (300, 30))
+            ts.blit(ee,(100, 5))
+            wt = len(str(self.topscore[key][1])) * 20
+            ee = pygame.Surface((wt, 30))
+            ee.fill(self.colors["background"])
+            IE.print_text(str(self.topscore[key][1]), self.colors['black'], 0, 0, ee, 30)
+            if wt > 300:
+                ee = pygame.transform.scale(ee, (300, 30))
+            ts.blit(ee,(300, 5))
+
+            surface.blit(ts, (0, (hs + step) * (index + 1)))
+
+        return surface
+        
     def startRecords(self):
         loop = True
         self.BTm = 0
-        self.startX = (self.width - 600) / 2
-        self.startY = (self.height - 600) / 2
+        self.startX = (self.width - 550) / 2
+        self.startY = (self.height - 550) / 2
         backbut = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'],
                             image='images/back.png', imgsize=(20, 20), imgpos=(5, 5))
         while loop:
@@ -706,12 +740,13 @@ class GameInterface(Game):
                     quit(0)
             self.display.fill(self.colors['background'])
             backbut.draw(x=(self.width - self.startX - 50), y=(self.startY + 50), dp=self.display, action=self.BTmenu)
-            IE.print_text("Top scores", x=self.startX + 90, y=self.startY + 20, color=self.colors['black'],
+            IE.print_text("Top scores", x=self.startX + 40, y=self.startY + 20, color=self.colors['black'],
                           display=self.display, size=70)
 
             if self.BTm:
                 loop = False
                 self.startMenu()
+            self.display.blit(self.drawTopScores(), (self.startX,  self.startY + 100))
             pygame.display.update()
             self.clock.tick(self.fps)
 
