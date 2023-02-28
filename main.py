@@ -28,6 +28,7 @@ class GameInterface(Game):
         self.startY = 50
         self.plineW = 10
         self.conti = 0
+        self.topscore = 0
         self.psizeQ = 125
         self.fontsize = 36
         self.possiblecuts = 0
@@ -257,6 +258,7 @@ class GameInterface(Game):
             json.dump(save, F, indent=4)
             F.close()
 
+
     def loadSave(self):
         try:
             with open(f'saves/{self.psize}.json', 'rb') as F:
@@ -270,7 +272,7 @@ class GameInterface(Game):
                 self.conti = save["continue"]
                 self.usedcutsBack = save["usedcutsBack"]
                 self.useddobBack = save["useddobBack"]
-        except FileNotFoundError and KeyError:
+        except FileNotFoundError or KeyError:
             self.spawnpole(self.psize)
             self.score = 0
             self.conti = 0
@@ -300,6 +302,7 @@ class GameInterface(Game):
                      textsize=40, textpos=(65, 5), textcolor=self.colors['black'])
         continu.draw((self.width / 2 - 150), self.height / 2 + 120, self.display, action=self.contGame, text='continue',
                      textsize=40, textpos=(55, 5), textcolor=self.colors['black'])
+
     def drawlose(self):
         backbut1 = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
         restart = IE.Button(width=300, height=50, activecolor=self.colors['lines'], inactivecolor=self.colors['.'])
@@ -368,27 +371,28 @@ class GameInterface(Game):
             self.display.fill(self.colors['background'])
             self.drawpole()
             if self.checkwin() and not self.conti:
-                rbut.draw(self.startX + 90 * 2, self.startY-40, dp=self.display)
-                cbut.draw(self.startX, 10, dp=self.display,
+                rbut.draw(self.startX + 90 * 2, self.startY - 40, dp=self.display)
+                cbut.draw(self.startX, self.startY - 40, dp=self.display,
                           text=f':{str(self.possiblecuts - self.usedcuts)}',
                           textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
-                dbut.draw(self.startX + 90, self.startY-40, dp=self.display,
+                dbut.draw(self.startX + 90, self.startY - 40, dp=self.display,
                           text=f':{str(self.possibledob - self.useddob)}',
                           textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
-                backbut.draw(x=(self.width - self.startX - 30), y=self.startY-40, dp=self.display)
-                resbut.draw(x=(self.startX + 220), y=self.startY-30, dp=self.display,
+                backbut.draw(x=(self.width - self.startX - 30), y=self.startY - 40, dp=self.display)
+                resbut.draw(x=(self.startX + 220), y=self.startY - 40, dp=self.display,
                             text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
+
                 self.drawwin()
             elif self.checklose():
-                rbut.draw(self.startX + 90 * 2, self.startY-40, dp=self.display)
-                cbut.draw(self.startX, self.startY-40, dp=self.display,
+                rbut.draw(self.startX + 90 * 2, self.startY - 40, dp=self.display)
+                cbut.draw(self.startX, self.startY - 40, dp=self.display,
                           text=f':{str(self.possiblecuts - self.usedcuts)}',
                           textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
-                dbut.draw(self.startX + 90, self.startY-40, dp=self.display,
+                dbut.draw(self.startX + 90, self.startY - 40, dp=self.display,
                           text=f':{str(self.possibledob - self.useddob)}',
                           textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
-                backbut.draw(x=(self.width - self.startX - 30), y=self.startY-40, dp=self.display)
-                resbut.draw(x=(self.startX + 220), y=self.startY-40, dp=self.display,
+                backbut.draw(x=(self.width - self.startX - 30), y=self.startY - 40, dp=self.display)
+                resbut.draw(x=(self.startX + 220), y=self.startY - 40, dp=self.display,
                             text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
                 self.drawlose()
             else:
@@ -413,42 +417,53 @@ class GameInterface(Game):
         pygame.quit()
         quit(0)
 
-    def gtsettings(self):
-        self.end = 2
-
     def startMenu(self):
         loop = True
         self.end = 0
         self.startX = (self.width - 400) / 2
+        self.startY = (self.height - 600) / 2
         pygame.display.set_caption('2048 by MBUDO : Menu')
         chmodebut = IE.Button(self.mbutsize[0], self.mbutsize[1], self.colors['lines'], self.colors['.'])
         quitbut = IE.Button(self.mbutsize[0], self.mbutsize[1], self.colors['lines'], self.colors['.'])
         settingsbut = IE.Button(self.mbutsize[0], self.mbutsize[1], self.colors['lines'], self.colors['.'])
+        topscoresbut = IE.Button(self.mbutsize[0], self.mbutsize[1], self.colors['lines'], self.colors['.'])
         while loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
             self.display.fill(self.colors['background'])
-            IE.print_text('2048', self.colors['black'], self.startX + 100, 5, size=75, display=self.display)
-            IE.print_text('by MBUDO', self.colors['black'], self.startX, 85, size=75, display=self.display)
-            chmodebut.draw(self.startX, 200, text='Play', textcolor=self.colors['black'], textsize=50,
-                           textpos=(75, 5), action=self.endlop, dp=self.display)
-            quitbut.draw(self.startX, 460, text='Quit', textcolor=self.colors['black'], textsize=50,
+            IE.print_text('2048', self.colors['black'], self.startX + 100, self.startY + 5,
+                          size=75, display=self.display)
+            IE.print_text('by MBUDO', self.colors['black'], self.startX, self.startY + 85,
+                          size=75, display=self.display)
+            chmodebut.draw(self.startX, self.startY + 200, text='Play', textcolor=self.colors['black'], textsize=50,
+                           textpos=(75, 5), action=self.endlop, actionkey=1, dp=self.display)
+            quitbut.draw(self.startX, self.startY + 470, text='Quit', textcolor=self.colors['black'], textsize=50,
                          textpos=(75, 5), action=self.close, dp=self.display)
-            settingsbut.draw(self.startX, 330, text='Settings', textcolor=self.colors['black'], textsize=50,
-                             textpos=(75, 5), action=self.gtsettings, dp=self.display)
+            topscoresbut.draw(self.startX, self.startY + 380, dp=self.display,
+                              text='Top scores',  textcolor=self.colors['black'], textsize=50, textpos=(42, 5),
+                              action=self.endlop, actionkey=3)
+            settingsbut.draw(self.startX, self.startY + 290, text='Settings', textcolor=self.colors['black'], textsize=50,
+                             textpos=(75, 5), action=self.endlop, actionkey=2, dp=self.display)
             if self.end == 1:
                 loop = False
                 self.startChose()
             if self.end == 2:
                 loop = False
                 self.startSettings()
-
+            if self.end == 3:
+                loop = False
+                self.startRecords()
             pygame.display.update()
             self.clock.tick(self.fps)
 
-    def endlop(self):
-        self.end = 1
+    def endlop(self, key):
+        if key == 1:
+            self.end = 1
+        elif key == 2:
+            self.end = 2
+        elif key == 3:
+            self.end = 3
 
     def BTmenu(self):
         self.BTm = 1
@@ -469,17 +484,18 @@ class GameInterface(Game):
         mbut = IE.Button(width=100, height=50, activecolor=self.colors['lines'],
                          inactivecolor=self.colors['.'])
         backbut = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'],
-                            image='images/back.png', imgsize=(20, 20), imgpos=(5, 5))
+                             image='images/back.png', imgsize=(20, 20), imgpos=(5, 5))
         while loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
             self.display.fill(self.colors['background'])
-            IE.draw_image(f'images/{self.gamemodes[self.cur]}.png', 400, 400, self.startX, self.startY + 50, self.display)
+            IE.draw_image(f'images/spaces/{self.gamemodes[self.cur]}.png', 400, 400, self.startX, self.startY + 50, self.display)
             larr.draw(x=self.startX, y=self.startY+450, dp=self.display, action=self.larrf)
             rarr.draw(x=self.startX + 300, y=self.startY+450, dp=self.display, action=self.rarrf)
             mbut.draw(x=self.startX + 150, y=self.startY+450, dp=self.display,
-                      text='Start game', textcolor=self.colors['black'], textsize=15, textpos=(5, 15), action=self.endlop)
+                      text='Start game', textcolor=self.colors['black'], textsize=15, textpos=(5, 15),
+                      action=self.endlop, actionkey=1)
             backbut.draw(x=self.startX + 370, y=self.startY + 50, dp=self.display, action=self.BTmenu)
             if self.end == 1:
                 loop = False
@@ -669,6 +685,27 @@ class GameInterface(Game):
                         else:
                             self.bindedButtons[key] = event.key
                         loop = False
+    def startRecords(self):
+        loop = True
+        self.BTm = 0
+        self.startX = (self.width - 600) / 2
+        self.startY = (self.height - 600) / 2
+        backbut = IE.Button(width=30, height=30, activecolor=self.colors['lines'], inactivecolor=self.colors['.'],
+                            image='images/back.png', imgsize=(20, 20), imgpos=(5, 5))
+        while loop:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    quit(0)
+            self.display.fill(self.colors['background'])
+            backbut.draw(x=(self.width - self.startX - 50), y=(self.startY + 50), dp=self.display, action=self.BTmenu)
+            IE.print_text("Top scores", x=self.startX + 90, y=self.startY + 20, color=self.colors['black'],
+                          display=self.display, size=70)
+
+            if self.BTm:
+                loop = False
+                self.startMenu()
+            pygame.display.update()
+            self.clock.tick(self.fps)
 
 
 if __name__ == "__main__":
