@@ -707,6 +707,11 @@ class GameInterface(Game):
             pygame.display.update()
             self.clock.tick(self.fps)
 
+    def loadRecords(self):
+        save = 
+        
+
+
 
 if __name__ == "__main__":
     a = GameInterface()
