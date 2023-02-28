@@ -28,7 +28,7 @@ class GameInterface(Game):
         self.startY = 50
         self.plineW = 10
         self.conti = 0
-        self.topscore = 0
+        self.topscore = None
         self.psizeQ = 125
         self.fontsize = 36
         self.possiblecuts = 0
@@ -39,7 +39,7 @@ class GameInterface(Game):
         self.mbutsize = (400, 75)
         self.doubrez = 1000
         self.scale = 1
-        self.gamemodes = [3, 4, 8]
+        self.gamemodes = [3, 4, 5, 8]
         self.cur = 1
         self.fullscrined = 0
         self.colors = {
@@ -76,6 +76,7 @@ class GameInterface(Game):
         self.curds = 0
         self.curres = 0
         self.resline = self.resolutions[self.dss]
+        self.loadRecords("load")
         pygame.init()
         self.settingssaves('load')
         if self.fullscrined:
@@ -316,6 +317,20 @@ class GameInterface(Game):
                       textsize=40, textpos=(5, 5), textcolor=self.colors['black'])
         restart.draw((self.width / 2 - 150), self.height / 2 + 60, self.display, action=self.Brestart, text='restart',
                      textsize=40, textpos=(65, 5), textcolor=self.colors['black'])
+        
+    def checkTop(self):
+        toprate = self.topscore[f"{self.sizep}x{self.sizep}"]
+        if not (self.usedcuts or self.useddob):
+            if self.score > toprate[0]:
+                nr = [self.score, toprate[1]]
+                self.topscore[f"{self.sizep}x{self.sizep}"] =  nr
+                self.loadRecords("upload")
+        else:
+            if self.score > toprate[1]:
+                nr = [toprate[0], self.score]
+                self.topscore[f"{self.sizep}x{self.sizep}"] =  nr
+                self.loadRecords("upload")
+       
 
     def startGame(self, a):
         self.sizep = self.psize = a
@@ -368,9 +383,10 @@ class GameInterface(Game):
             self.makeSave()
             if self.moved:
                 self.spawn()
+                self.checkTop()
             self.display.fill(self.colors['background'])
             self.drawpole()
-            if self.checkwin() and not self.conti:
+            if (self.checkwin() and not self.conti) or self.checklose():
                 rbut.draw(self.startX + 90 * 2, self.startY - 40, dp=self.display)
                 cbut.draw(self.startX, self.startY - 40, dp=self.display,
                           text=f':{str(self.possiblecuts - self.usedcuts)}',
@@ -381,20 +397,10 @@ class GameInterface(Game):
                 backbut.draw(x=(self.width - self.startX - 30), y=self.startY - 40, dp=self.display)
                 resbut.draw(x=(self.startX + 220), y=self.startY - 40, dp=self.display,
                             text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
-
-                self.drawwin()
-            elif self.checklose():
-                rbut.draw(self.startX + 90 * 2, self.startY - 40, dp=self.display)
-                cbut.draw(self.startX, self.startY - 40, dp=self.display,
-                          text=f':{str(self.possiblecuts - self.usedcuts)}',
-                          textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
-                dbut.draw(self.startX + 90, self.startY - 40, dp=self.display,
-                          text=f':{str(self.possibledob - self.useddob)}',
-                          textpos=(25, 3), textsize=20, textcolor=self.colors['black'])
-                backbut.draw(x=(self.width - self.startX - 30), y=self.startY - 40, dp=self.display)
-                resbut.draw(x=(self.startX + 220), y=self.startY - 40, dp=self.display,
-                            text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
-                self.drawlose()
+                if self.checkwin():
+                    self.drawwin()
+                else:
+                    self.drawlose()
             else:
                 rbut.draw(self.startX + 90 * 2, self.startY-40, dp=self.display, action=self.back)
                 cbut.draw(self.startX, self.startY-40, dp=self.display, action=self.cut,
@@ -514,6 +520,8 @@ class GameInterface(Game):
             self.scale = 1.32
         elif self.gamemodes[self.cur] == 8:
             self.scale = 0.5
+        elif self.gamemodes[self.cur] == 5:
+            self.scale = 0.8
             
     def larrf(self):
         if self.cur == 0:
@@ -707,8 +715,26 @@ class GameInterface(Game):
             pygame.display.update()
             self.clock.tick(self.fps)
 
-    def loadRecords(self):
-        save = 
+    def loadRecords(self, key):
+        if key == "load":
+            try:
+                with open("saves/topscores.json", 'r') as F:
+                    self.topscore = json.load(F)
+            except FileNotFoundError:
+                with open("saves/topscores.json", "w") as F:
+                    defoul = {
+                        "3x3": [0, 0],
+                        "4x4": [0, 0],
+                        "5x5": [0, 0],
+                        "8x8": [0, 0]
+                    }
+                    json.dump(defoul, F, indent=4)
+        else:
+            with open("saves/topscores.json", "w") as F:
+                json.dump(self.topscore, F, indent=4)
+
+
+
         
 
 
