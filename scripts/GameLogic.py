@@ -37,7 +37,7 @@ class Game:
         self.checkclear()
         if len(self.clears) != 0:
             point = random.choice(self.clears)
-            self.pole[point[0]][point[1]] = str(random.choice([2, 4]))
+            self.pole[point[0]][point[1]] = str(random.choices([2, 4], [0.65, 0.35])[0])
 
     def draw(self):
         print(f"frame number: {self.framenum}")
@@ -88,11 +88,10 @@ class Game:
                             self.pole[i][j] == self.pole[i + 1][j] or \
                             self.pole[i][j] == self.pole[i - 1][j]:
                         return False
-            if self.pole[0][0] == self.pole[0][1] or self.pole[0][0] == self.pole[1][0] or \
-                    self.pole[-1][0] == self.pole[-2][0] or self.pole[-1][0] == self.pole[-1][1] or \
-                    self.pole[0][-1] == self.pole[0][-2] or self.pole[0][-1] == self.pole[1][-1] or \
-                    self.pole[-1][-1] == self.pole[-1][-2] or self.pole[-1][-1] == self.pole[-2][-1]:
-                return False
+            for i in range(self.psize - 1):
+                if self.pole[i][0] == self.pole[i + 1][0] or self.pole[i][-1] == self.pole[i + 1][-1]: return False
+            for j in range(self.psize - 1):
+                if self.pole[0][j] == self.pole[0][j + 1] or self.pole[-1][j] == self.pole[-1][j + 1]: return False
         return False if len(self.clears) != 0 else True
 
     def swipedown(self, k):

@@ -1,5 +1,6 @@
 from scripts.GameLogic import Game, backuping
 from scripts import InterfaceElements as IE
+from saves.const import *
 import pygame
 import json
 
@@ -20,8 +21,6 @@ class GameInterface(Game):
         self.width = 600
         self.height = 600
         self.fps = 30
-        self.win = None
-        self.lose = None
         self.sizep = 0
         self.icon = pygame.image.load('images/logo1.png')
         self.startX = 50
@@ -42,36 +41,10 @@ class GameInterface(Game):
         self.gamemodes = [3, 4, 5, 8]
         self.cur = 1
         self.fullscrined = 0
-        self.colors = {
-            'background': (248, 248, 232),
-            'lines': (183, 173, 161),
-            '.': (213, 205, 197),
-            '2': (236, 227, 218),
-            '4': (234, 223, 201),
-            '8': (232, 179, 129),
-            '16': (231, 153, 107),
-            '32': (230, 130, 102),
-            '64': (228, 130, 71),
-            '128': (233, 208, 126),
-            '256': (230, 205, 113),
-            '512': (231, 201, 101),
-            '1024': (230, 198, 89),
-            '2048': (230, 195, 79),
-            'black': (61, 58, 51),
-            'bright': (250, 250, 250)
-        }
-        self.resolutions = {
-            "1:1": ['600x600', '700x700', '800x800', '900x900', '1000x1000', '1200x1200', '1600x1600'],
-            "4:3": ['800x600', '1024x768', '1400x1050'],
-            "16:9": ['1280x720', '1600x900', '1920x1080', '2560x1440', '3840x2160'],
-            "16:10": ['1440x900', '1680x1050', '2560x1600', '3840x2400']
-        }
-        self.bindedButtons = {
-            'up': pygame.K_w,
-            'down': pygame.K_s,
-            'left': pygame.K_a,
-            'right': pygame.K_d
-        }
+        self.topscoreback = 0
+        self.colors = COLORS
+        self.resolutions = RESOLUTIONS
+        self.bindedButtons = BINDEDBUTTONS
         self.dss = "1:1"
         self.curds = 0
         self.curres = 0
@@ -149,6 +122,11 @@ class GameInterface(Game):
 
     def back(self):
         command = 'back'
+        # if (self.usedcuts or self.useddob) and (self.usedcutsBack or self.useddobBack):
+        #     if self.topscore[f"{self.sizep}x{self.sizep}"][1] > self.scr
+        #     self.topscore[f"{self.sizep}x{self.sizep}"] = [self.topscore[f"{self.sizep}x{self.sizep}"][0], self.topscoreback]
+        # elif (self.usedcuts or self.useddob) and not (self.usedcutsBack or self.useddobBack):
+        #     self.topscore[f"{self.sizep}x{self.sizep}"]
         self.usedcuts = self.usedcutsBack
         self.useddob = self.useddobBack
         self.move(command)
@@ -159,10 +137,10 @@ class GameInterface(Game):
                 "fullscreen": self.fullscrined,
                 "aspectratio": list(self.resolutions.keys())[self.curds],
                 "resolution": self.curres,
-                "up": IE.get_key(self.bindedButtons["up"], IE.keys),
-                "down": IE.get_key(self.bindedButtons["down"], IE.keys),
-                "left": IE.get_key(self.bindedButtons["left"], IE.keys),
-                "right": IE.get_key(self.bindedButtons["right"], IE.keys)
+                "up": IE.get_key(self.bindedButtons["up"], KEYS),
+                "down": IE.get_key(self.bindedButtons["down"], KEYS),
+                "left": IE.get_key(self.bindedButtons["left"], KEYS),
+                "right": IE.get_key(self.bindedButtons["right"], KEYS)
             }
             with open(f"saves/settings.json", 'w') as F:
                 json.dump(save, F, indent=4)
@@ -171,7 +149,7 @@ class GameInterface(Game):
             try:
                 with open(f"saves/settings.json", 'rb') as F:
                     save = json.load(F)
-            except FileNotFoundError:
+            except FileNotFoundError or KeyError:
                 self.settingssaves('upload')
                 with open(f"saves/settings.json", 'rb') as F:
                     save = json.load(F)
@@ -182,10 +160,10 @@ class GameInterface(Game):
                 self.curres = save["resolution"]
                 print(self.width, self.height)
                 self.curds = list(self.resolutions.keys()).index(save["aspectratio"])
-                self.bindedButtons['up'] = IE.keys[save["up"]]
-                self.bindedButtons['down'] = IE.keys[save["down"]]
-                self.bindedButtons['left'] = IE.keys[save["left"]]
-                self.bindedButtons['right'] = IE.keys[save["right"]]
+                self.bindedButtons['up'] = KEYS[save["up"]]
+                self.bindedButtons['down'] = KEYS[save["down"]]
+                self.bindedButtons['left'] = KEYS[save["left"]]
+                self.bindedButtons['right'] = KEYS[save["right"]]
 
     def cut(self):
         if self.possiblecuts - self.usedcuts > 0:
@@ -243,46 +221,45 @@ class GameInterface(Game):
         self.spawn()
         self.makebackup()
 
-    def makeSave(self):
-        save = {
-            "pole": self.pole,
-            "score": self.score,
-            "usedcuts": self.usedcuts,
-            "useddob": self.useddob,
-            "scoreBack": self.scoreBack,
-            "poleBack": self.backup,
-            "continue": self.conti,
-            "useddobBack": self.useddobBack,
-            "usedcutsBack": self.usedcutsBack
-        }
-        with open(f"saves/{self.psize}.json", 'w') as F:
-            json.dump(save, F, indent=4)
-            F.close()
-
-
-    def loadSave(self):
-        try:
-            with open(f'saves/{self.psize}.json', 'rb') as F:
-                save = json.load(F)
-                self.pole = save["pole"]
-                self.score = save["score"]
-                self.usedcuts = save["usedcuts"]
-                self.useddob = save["useddob"]
-                self.scoreBack = save["scoreBack"]
-                self.backup = save["poleBack"]
-                self.conti = save["continue"]
-                self.usedcutsBack = save["usedcutsBack"]
-                self.useddobBack = save["useddobBack"]
-        except FileNotFoundError or KeyError:
-            self.spawnpole(self.psize)
-            self.score = 0
-            self.conti = 0
-            self.useddob = 0
-            self.usedcuts = 0
-            self.useddobBack = 0
-            self.usedcutsBack = 0
-            self.spawn()
-            self.makebackup()
+    def GameSave(self, key):
+        if key == 'upload':
+            save = {
+                "pole": self.pole,
+                "score": self.score,
+                "usedcuts": self.usedcuts,
+                "useddob": self.useddob,
+                "scoreBack": self.scoreBack,
+                "poleBack": self.backup,
+                "continue": self.conti,
+                "useddobBack": self.useddobBack,
+                "usedcutsBack": self.usedcutsBack
+            }
+            with open(f"saves/{self.psize}.json", 'w') as F:
+                json.dump(save, F, indent=4)
+                F.close()
+        else:
+            try:
+                with open(f'saves/{self.psize}.json', 'rb') as F:
+                    save = json.load(F)
+                    self.pole = save["pole"]
+                    self.score = save["score"]
+                    self.usedcuts = save["usedcuts"]
+                    self.useddob = save["useddob"]
+                    self.scoreBack = save["scoreBack"]
+                    self.backup = save["poleBack"]
+                    self.conti = save["continue"]
+                    self.usedcutsBack = save["usedcutsBack"]
+                    self.useddobBack = save["useddobBack"]
+            except FileNotFoundError or KeyError:
+                self.spawnpole(self.psize)
+                self.score = 0
+                self.conti = 0
+                self.useddob = 0
+                self.usedcuts = 0
+                self.useddobBack = 0
+                self.usedcutsBack = 0
+                self.spawn()
+                self.makebackup()
 
     def contGame(self):
         self.conti = 1
@@ -338,7 +315,7 @@ class GameInterface(Game):
         self.BTc = 0
         self.startX = (self.width - 500) // 2
         self.startY = (self.height - 500) // 2
-        self.loadSave()
+        self.GameSave("load")
         rbut = IE.Button(30, 30, self.colors['lines'], self.colors['.'],
                          image='images/rbut1.png', imgsize=(20, 20), imgpos=(5, 5))
         cbut = IE.Button(80, 30, self.colors['lines'], self.colors['.'],
@@ -380,7 +357,7 @@ class GameInterface(Game):
                         self.cut()
                     elif event.key == pygame.K_b:
                         self.back()
-            self.makeSave()
+            self.GameSave("upload")
             if self.moved:
                 self.spawn()
                 self.checkTop()
@@ -397,7 +374,7 @@ class GameInterface(Game):
                 backbut.draw(x=(self.width - self.startX - 30), y=self.startY - 40, dp=self.display)
                 resbut.draw(x=(self.startX + 220), y=self.startY - 40, dp=self.display,
                             text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
-                if self.checkwin():
+                if self.checkwin() and not self.checklose():
                     self.drawwin()
                 else:
                     self.drawlose()
@@ -609,34 +586,34 @@ class GameInterface(Game):
             nextss.draw(x=self.startX + 400, y=self.startY + 100, dp=self.display, action=self.movess, actionkey='next')
             prevss.draw(x=self.startX + 250, y=self.startY + 100, dp=self.display, action=self.movess, actionkey='prev')
             bindupb.draw(x=self.startX + 250, y=self.startY + 250, dp=self.display,
-                         text=f'{IE.get_key(self.bindedButtons["up"], IE.keys)}',
+                         text=f'{IE.get_key(self.bindedButtons["up"], KEYS)}',
                          textcolor=self.colors['black'],
                          textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='up')
             binddownb.draw(x=self.startX + 250, y=self.startY + 300, dp=self.display,
-                           text=f'{IE.get_key(self.bindedButtons["down"], IE.keys)}',
+                           text=f'{IE.get_key(self.bindedButtons["down"], KEYS)}',
                            textcolor=self.colors['black'],
                            textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='down')
             bindrightb.draw(x=self.startX + 250, y=self.startY + 400, dp=self.display,
-                            text=f'{IE.get_key(self.bindedButtons["right"], IE.keys)}',
+                            text=f'{IE.get_key(self.bindedButtons["right"], KEYS)}',
                             textcolor=self.colors['black'],
                             textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='right')
             bindleftb.draw(x=self.startX + 250, y=self.startY + 350, dp=self.display,
-                           text=f'{IE.get_key(self.bindedButtons["left"], IE.keys)}',
+                           text=f'{IE.get_key(self.bindedButtons["left"], KEYS)}',
                            textcolor=self.colors['black'],
                            textsize=25, textpos=(7, 1), action=self.bindbuttons, actionkey='left')
-            if len(IE.get_key(self.bindedButtons["up"], IE.keys)) > 1:
+            if len(IE.get_key(self.bindedButtons["up"], KEYS)) > 1:
                 bindupb.width = 90
             else:
                 bindupb.width = 30
-            if len(IE.get_key(self.bindedButtons["down"], IE.keys)) > 1:
+            if len(IE.get_key(self.bindedButtons["down"], KEYS)) > 1:
                 binddownb.width = 90
             else:
                 binddownb.width = 30
-            if len(IE.get_key(self.bindedButtons["left"], IE.keys)) > 1:
+            if len(IE.get_key(self.bindedButtons["left"], KEYS)) > 1:
                 bindleftb.width = 90
             else:
                 bindleftb.width = 30
-            if len(IE.get_key(self.bindedButtons["right"], IE.keys)) > 1:
+            if len(IE.get_key(self.bindedButtons["right"], KEYS)) > 1:
                 bindrightb.width = 90
             else:
                 bindrightb.width = 30
@@ -686,7 +663,7 @@ class GameInterface(Game):
                 if event.type == pygame.QUIT:
                     quit(0)
                 elif event.type == pygame.KEYDOWN:
-                    if event.key in IE.keys.values():
+                    if event.key in KEYS.values():
                         if event.key in self.bindedButtons.values():
                             self.bindedButtons[IE.get_key(event.key, self.bindedButtons)] = self.bindedButtons[key]
                             self.bindedButtons[key] = event.key
@@ -767,10 +744,6 @@ class GameInterface(Game):
         else:
             with open("saves/topscores.json", "w") as F:
                 json.dump(self.topscore, F, indent=4)
-
-
-
-        
 
 
 

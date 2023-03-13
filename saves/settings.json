@@ -1,6 +1,6 @@
 {
-    "fullscreen": 0,
-    "aspectratio": "1:1",
+    "fullscreen": 1,
+    "aspectratio": "16:10",
     "resolution": 0,
     "up": "w",
     "down": "s",
