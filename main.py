@@ -1,4 +1,4 @@
-from scripts.GameLogic import Game, backuping
+from scripts.GameLogic import Game, backuping, checkravn
 from scripts import InterfaceElements as IE
 from saves.const import *
 import pygame
@@ -60,10 +60,11 @@ class GameInterface(Game):
         self.clock = pygame.time.Clock()
 
     def makebackup(self):
-        self.backup = backuping(self.pole, self.backup)
-        self.scoreBack = self.score
-        self.useddobBack = self.useddob
-        self.usedcutsBack = self.usedcuts
+        if not checkravn(self.pole, self.backup):
+            self.backup = backuping(self.pole, self.backup)
+            self.scoreBack = self.score
+            self.useddobBack = self.useddob
+            self.usedcutsBack = self.usedcuts
 
     def drawpole(self):
         for y in range(0, self.sizep + 1):
@@ -332,38 +333,37 @@ class GameInterface(Game):
         while run:
             self.possiblecuts = self.score // self.cutrez
             self.possibledob = self.score // self.doubrez
+            win = self.checkwin()
+            lose = self.checklose()
             self.moved = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                elif event.type == pygame.KEYDOWN and (not self.checkwin() or self.conti) and not self.checklose():
+                elif event.type == pygame.KEYDOWN and (not win or self.conti) and not lose:
                     if event.key == self.bindedButtons['up']:
                         command = 'up'
-                        self.makebackup()
                         self.move(command)
                     elif event.key == self.bindedButtons['down']:
                         command = 'down'
-                        self.makebackup()
                         self.move(command)
                     elif event.key == self.bindedButtons['left']:
                         command = 'left'
-                        self.makebackup()
                         self.move(command)
                     elif event.key == self.bindedButtons['right']:
                         command = 'right'
-                        self.makebackup()
                         self.move(command)
                     elif event.key == pygame.K_c:
                         self.cut()
                     elif event.key == pygame.K_b:
                         self.back()
+            self.makebackup()
             self.GameSave("upload")
             if self.moved:
                 self.spawn()
                 self.checkTop()
             self.display.fill(self.colors['background'])
             self.drawpole()
-            if (self.checkwin() and not self.conti) or self.checklose():
+            if (win and not self.conti) or lose:
                 rbut.draw(self.startX + 90 * 2, self.startY - 40, dp=self.display)
                 cbut.draw(self.startX, self.startY - 40, dp=self.display,
                           text=f':{str(self.possiblecuts - self.usedcuts)}',
@@ -374,7 +374,7 @@ class GameInterface(Game):
                 backbut.draw(x=(self.width - self.startX - 30), y=self.startY - 40, dp=self.display)
                 resbut.draw(x=(self.startX + 220), y=self.startY - 40, dp=self.display,
                             text='reset', textsize=20, textpos=(5, 3), textcolor=self.colors['black'])
-                if self.checkwin() and not self.checklose():
+                if win and not lose:
                     self.drawwin()
                 else:
                     self.drawlose()

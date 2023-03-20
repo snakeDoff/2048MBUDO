@@ -11,6 +11,11 @@ def backuping(l1, l2):
         l2.append(temp)
     return l2
 
+def checkravn(l1, l2):
+    for i in range(len(l1)):
+        for j in range(len(l1[0])):
+            if l1[i][j] != l2[i][j]: return False
+    return True
 
 class Game:
     def __init__(self):
@@ -80,18 +85,20 @@ class Game:
     def checklose(self):
         self.checkclear()
         if len(self.clears) == 0:
-            for i in range(1, self.psize - 1):
-                for j in range(1, self.psize - 1):
-                    if self.pole[i][j] == '.' or \
-                            self.pole[i][j + 1] == self.pole[i][j] or \
-                            self.pole[i][j] == self.pole[i][j - 1] or \
-                            self.pole[i][j] == self.pole[i + 1][j] or \
-                            self.pole[i][j] == self.pole[i - 1][j]:
-                        return False
+            # for i in range(1, self.psize - 1):
+            #     for j in range(1, self.psize - 1):
+            #         if self.pole[i][j] == '.' or \
+            #                 self.pole[i][j + 1] == self.pole[i][j] or \
+            #                 self.pole[i][j] == self.pole[i][j - 1] or \
+            #                 self.pole[i][j] == self.pole[i + 1][j] or \
+            #                 self.pole[i][j] == self.pole[i - 1][j]:
+            #             return False
             for i in range(self.psize - 1):
-                if self.pole[i][0] == self.pole[i + 1][0] or self.pole[i][-1] == self.pole[i + 1][-1]: return False
+                for j in range(self.psize):
+                    if self.pole[i][j] == self.pole[i + 1][j]: return False
             for j in range(self.psize - 1):
-                if self.pole[0][j] == self.pole[0][j + 1] or self.pole[-1][j] == self.pole[-1][j + 1]: return False
+                for i in range(self.psize):
+                    if self.pole[i][j] == self.pole[i][j + 1]: return False
         return False if len(self.clears) != 0 else True
 
     def swipedown(self, k):
@@ -150,6 +157,7 @@ class Game:
                         self.score += int(self.pole[i][j])
                         self.swipeup(j)
                         self.moved = True
+                        
         elif command.lower() == 'right':
             for i in range(self.psize):
                 self.swiperight(i)
@@ -186,6 +194,7 @@ class Game:
                             self.pole[i][j] = '.'
                         else:
                             self.pole[i][j] = str(int(self.pole[i][j]) // 2)
+
         elif 'double' in command.lower():
             i = int(command.split('-')[1])
             j = int(command.split('-')[2])
